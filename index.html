@@ -394,6 +394,12 @@
                     </small>
                     <button id="saveApiKey" style="padding: 4px 8px; font-size: 11px; background: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;">💾 Save</button>
                 </div>
+                <div style="margin-top: 8px; padding: 8px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; font-size: 11px;">
+                    <strong>⚠️ CORS Notice:</strong> Browser security may block direct API calls. 
+                    <button onclick="showCorsHelp()" style="background: none; border: none; color: #007bff; text-decoration: underline; cursor: pointer; font-size: 11px;">
+                        Click for solutions →
+                    </button>
+                </div>
             </div>
             
             <div class="ai-prompt-section">
@@ -2058,8 +2064,11 @@
         }
 
         async function callClaudeAPI(prompt, apiKey) {
-            // Real Claude API implementation
+            // Note: Direct browser calls to Claude API are blocked by CORS
+            // This is a demonstration with error handling for the CORS issue
+            
             try {
+                // Option 1: Try direct API call (will likely fail due to CORS)
                 const response = await fetch('https://api.anthropic.com/v1/messages', {
                     method: 'POST',
                     headers: {
@@ -2086,8 +2095,45 @@
                 return data.content[0].text;
                 
             } catch (error) {
-                if (error.message.includes('fetch')) {
-                    throw new Error('Network error - please check your internet connection');
+                // If CORS error detected, provide helpful guidance
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    // Return a demo response for now
+                    return `🔬 **Professor Research Demo**
+
+**Research Areas:** Machine Learning, Computer Vision, AI Safety
+**Current Affiliation:** Technical University of [Location]
+**Notable Publications:** 50+ papers in top-tier conferences (ICML, NeurIPS, ICLR)
+**Key Achievements:** Research in adversarial examples and robust ML systems
+**PhD Supervision:** Currently supervising 3-5 PhD students
+**Collaboration Potential:** High - active in international research networks
+
+*Note: This is a demo response. To get real AI research:*
+
+**🛠️ Setup Options:**
+1. **Browser Extension:** Install "CORS Unblock" extension
+2. **Local Server:** Run a simple proxy server
+3. **Console Method:** Use browser developer tools
+
+**📋 Console Instructions:**
+1. Press F12 → Console tab
+2. Paste this code:
+\`\`\`javascript
+fetch('https://api.anthropic.com/v1/messages', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': 'YOUR_API_KEY',
+    'anthropic-version': '2023-06-01'
+  },
+  body: JSON.stringify({
+    model: 'claude-3-sonnet-20240229',
+    max_tokens: 1500,
+    messages: [{role: 'user', content: 'Research [Professor Name]'}]
+  })
+}).then(r => r.json()).then(console.log)
+\`\`\`
+
+Replace YOUR_API_KEY and Professor Name, then press Enter.`;
                 } else if (error.message.includes('401')) {
                     throw new Error('Invalid API key - please check your Claude API key');
                 } else if (error.message.includes('429')) {
@@ -2105,6 +2151,46 @@
                 researchProfessor(professorName);
             }
         });
+
+        // Show CORS help dialog
+        function showCorsHelp() {
+            const helpContent = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;" onclick="this.remove()">
+                    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 600px; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                        <h3 style="margin: 0 0 20px 0; color: #333;">🛠️ CORS Solutions for Claude API</h3>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #007bff; margin: 0 0 10px 0;">🌐 Option 1: Browser Extension (Easiest)</h4>
+                            <ol style="margin: 0; padding-left: 20px;">
+                                <li>Install "CORS Unblock" or "CORS Everywhere" extension</li>
+                                <li>Enable the extension</li>
+                                <li>Refresh this page and try again</li>
+                            </ol>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #28a745; margin: 0 0 10px 0;">🔧 Option 2: Browser Console Method</h4>
+                            <ol style="margin: 0; padding-left: 20px;">
+                                <li>Press F12 to open Developer Tools</li>
+                                <li>Go to Console tab</li>
+                                <li>Copy and paste the API code (provided in demo results)</li>
+                                <li>Replace YOUR_API_KEY with your actual key</li>
+                            </ol>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #dc3545; margin: 0 0 10px 0;">⚡ Option 3: Local Proxy Server</h4>
+                            <p style="margin: 0 0 10px 0; font-size: 14px;">Create a simple local server to proxy the requests.</p>
+                        </div>
+                        
+                        <button onclick="this.parentElement.parentElement.remove()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', helpContent);
+        }
     </script>
     </script>
 </body>
