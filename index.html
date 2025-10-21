@@ -1965,8 +1965,9 @@
             // Clear all notes
             document.getElementById('clearAllNotes').addEventListener('click', function() {
                 if (confirm('Are you sure you want to clear all notes? This action cannot be undone.')) {
-                    localStorage.removeItem('professorNotes');
-                    notes = {};
+                    // Clear using the existing notes system
+                    localStorage.removeItem('names-notes'); // Clear the notes storage
+                    notesMemory.notes = {}; // Clear the memory object
                     populateNamesList(); // Refresh the display
                     showStatus('✅ All notes cleared!', 'success');
                 }
@@ -2015,15 +2016,13 @@
                 
                 const research = await callClaudeAPI(fullPrompt, apiKey);
                 
-                // Save the research to notes
-                if (!notes) notes = {};
-                const existingNote = notes[professorName] || '';
+                // Use the existing notes system instead of our own
+                const existingNote = notesMemory.getNote(professorName);
                 const timestamp = new Date().toLocaleDateString();
                 const newNote = existingNote + (existingNote ? '\n\n' : '') + `--- AI Research (${timestamp}) ---\n${research}`;
-                notes[professorName] = newNote;
                 
-                // Save to localStorage
-                localStorage.setItem('professorNotes', JSON.stringify(notes));
+                // Save using the existing notes system
+                notesMemory.setNote(professorName, newNote);
                 
                 // Update the display
                 populateNamesList();
