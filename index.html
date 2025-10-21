@@ -2015,17 +2015,41 @@
                 showStatus(`🔍 Researching ${professorName}...`, 'info');
                 
                 const research = await callClaudeAPI(fullPrompt, apiKey);
+                console.log('Research result:', research);
                 
                 // Use the existing notes system instead of our own
                 const existingNote = notesMemory.getNote(professorName);
+                console.log('Existing note:', existingNote);
+                
                 const timestamp = new Date().toLocaleDateString();
                 const newNote = existingNote + (existingNote ? '\n\n' : '') + `--- AI Research (${timestamp}) ---\n${research}`;
+                console.log('New note to save:', newNote);
                 
                 // Save using the existing notes system
                 notesMemory.setNote(professorName, newNote);
+                console.log('Note saved. Checking if saved correctly:', notesMemory.getNote(professorName));
                 
                 // Update the display
                 populateNamesList();
+                
+                // Auto-open the note section to show the result
+                setTimeout(() => {
+                    const noteSection = document.querySelector(`.note-section[data-name="${professorName}"]`);
+                    const noteDisplay = noteSection?.querySelector('.note-display');
+                    const noteToggleButton = document.querySelector(`.note-toggle[data-name="${professorName}"]`);
+                    
+                    if (noteSection && noteDisplay && noteToggleButton) {
+                        console.log('Opening note section for', professorName);
+                        noteSection.classList.add('active');
+                        noteDisplay.style.display = 'block';
+                        noteDisplay.classList.add('active');
+                        
+                        // Scroll to the note section
+                        noteSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        console.log('Could not find note section elements for', professorName);
+                    }
+                }, 100);
                 
                 showStatus(`✅ Research completed for ${professorName}`, 'success');
                 return research;
@@ -2194,6 +2218,25 @@
             `;
             document.body.insertAdjacentHTML('beforeend', helpContent);
         }
+
+        // Debug function to test note saving
+        function testNoteSaving() {
+            console.log('Testing note saving system...');
+            const testName = 'Sahar Abdelnabi';
+            const testNote = 'This is a test note from the debug function.';
+            
+            console.log('Before saving - existing note:', notesMemory.getNote(testName));
+            notesMemory.setNote(testName, testNote);
+            console.log('After saving - note should be:', notesMemory.getNote(testName));
+            console.log('localStorage contents:', localStorage.getItem('names-notes'));
+            
+            populateNamesList();
+            console.log('Display updated. Check if note appears in UI.');
+        }
+
+        // Add to window for debugging
+        window.testNoteSaving = testNoteSaving;
+        window.notesMemory = notesMemory;
     </script>
     </script>
 </body>
