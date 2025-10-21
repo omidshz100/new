@@ -77,6 +77,61 @@
             border-radius: 12px;
             margin-left: 5px;
         }
+        .nationality-override-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 5px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        .nationality-override-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .nationality-selector {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .nationality-selector h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+        .nationality-option {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+            cursor: pointer;
+            text-align: left;
+            font-size: 14px;
+        }
+        .nationality-option:hover {
+            background: #e9ecef;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
         .phd-selector {
             margin-left: 10px;
         }
@@ -255,6 +310,7 @@
             <p>Select up to 10 potential PhD supervisors from the list below. Recommended candidates are marked with ⭐.</p>
             <button class="save-note" onclick="showSelectedList()">View Selected List</button>
             <button class="clear-note" onclick="clearAllSelections()">Clear All</button>
+            <button class="save-note" onclick="analyzeUnknownNames()" style="background-color: #17a2b8;">🔍 Analyze Unknown Names</button>
         </div>
         
         <div class="search-container">
@@ -904,6 +960,211 @@
             }
         }
 
+        // Nationality override storage
+        let nationalityOverrides = JSON.parse(localStorage.getItem('nationalityOverrides') || '{}');
+
+        // Show nationality selector modal
+        function showNationalitySelector(name) {
+            const availableNationalities = [
+                { name: 'German', flag: '🇩🇪' },
+                { name: 'Italian', flag: '🇮🇹' },
+                { name: 'French', flag: '🇫🇷' },
+                { name: 'Arabic/Middle Eastern', flag: '🇸🇦' },
+                { name: 'Chinese', flag: '🇨🇳' },
+                { name: 'Scandinavian', flag: '🇸🇪' },
+                { name: 'Dutch', flag: '🇳🇱' },
+                { name: 'Polish', flag: '🇵🇱' },
+                { name: 'Greek', flag: '🇬🇷' },
+                { name: 'Turkish', flag: '🇹🇷' },
+                { name: 'Indian', flag: '🇮🇳' },
+                { name: 'British', flag: '🇬🇧' },
+                { name: 'Finnish', flag: '🇫🇮' },
+                { name: 'Romanian', flag: '🇷🇴' },
+                { name: 'Portuguese', flag: '🇵🇹' },
+                { name: 'Lithuanian', flag: '🇱🇹' },
+                { name: 'Spanish', flag: '🇪🇸' },
+                { name: 'Russian', flag: '🇷🇺' },
+                { name: 'Japanese', flag: '🇯🇵' },
+                { name: 'Korean', flag: '🇰🇷' },
+                { name: 'Vietnamese', flag: '🇻🇳' },
+                { name: 'Azerbaijani', flag: '🇦🇿' },
+                { name: 'European', flag: '🇪🇺' },
+                { name: 'Western', flag: '🌍' },
+                { name: 'Academic', flag: '🎓' },
+                { name: 'International', flag: '🌐' }
+            ];
+
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.onclick = () => closeNationalitySelector();
+
+            // Create selector dialog
+            const selector = document.createElement('div');
+            selector.className = 'nationality-selector';
+            selector.innerHTML = `
+                <h3>Set nationality for: ${name}</h3>
+                ${availableNationalities.map(nat => 
+                    `<button class="nationality-option" onclick="setNationality('${name}', '${nat.name}', '${nat.flag}')">
+                        ${nat.flag} ${nat.name}
+                    </button>`
+                ).join('')}
+                <button class="nationality-option" onclick="closeNationalitySelector()" style="background: #f44336; color: white; margin-top: 10px;">
+                    ❌ Cancel
+                </button>
+            `;
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(selector);
+        }
+
+        // Set nationality for a name
+        function setNationality(name, nationality, flag) {
+            nationalityOverrides[name] = { nationality, flag };
+            localStorage.setItem('nationalityOverrides', JSON.stringify(nationalityOverrides));
+            closeNationalitySelector();
+            displayNames(); // Refresh the display
+        }
+
+        // Close nationality selector
+        function closeNationalitySelector() {
+            const overlay = document.querySelector('.modal-overlay');
+            const selector = document.querySelector('.nationality-selector');
+            if (overlay) overlay.remove();
+            if (selector) selector.remove();
+        }
+
+        // Enhanced guessNationality function with override support
+        function guessNationalityWithOverride(name) {
+            // Check for manual override first
+            if (nationalityOverrides[name]) {
+                return nationalityOverrides[name];
+            }
+            
+            // Use original function
+            return guessNationality(name);
+        }
+
+        // Analyze unknown names and show suggestions
+        function analyzeUnknownNames() {
+            const unknownNames = names.filter(name => {
+                const nationality = guessNationalityWithOverride(name);
+                return nationality.nationality === 'Unknown';
+            });
+
+            if (unknownNames.length === 0) {
+                alert('Great! No unknown names found. All names have been successfully categorized.');
+                return;
+            }
+
+            const analysisResults = unknownNames.map(name => {
+                const suggestions = generateNationalitySuggestions(name);
+                return { name, suggestions };
+            });
+
+            showUnknownNamesAnalysis(analysisResults);
+        }
+
+        // Generate nationality suggestions based on enhanced patterns
+        function generateNationalitySuggestions(name) {
+            const nameLower = name.toLowerCase();
+            const suggestions = [];
+
+            // Check for specific patterns that might indicate nationality
+            
+            // Multiple word names (often Western)
+            if (name.split(' ').length > 2) {
+                suggestions.push({ nationality: 'Western', flag: '🌍', reason: 'Multiple words suggest Western naming convention' });
+            }
+
+            // Names with apostrophes (often Irish/Celtic)
+            if (name.includes("'") || /o'|mc/.test(nameLower)) {
+                suggestions.push({ nationality: 'British', flag: '🇬🇧', reason: 'Contains Celtic naming patterns (O\', Mc)' });
+            }
+
+            // Names with hyphens (often German/European)
+            if (name.includes('-')) {
+                suggestions.push({ nationality: 'German', flag: '🇩🇪', reason: 'Hyphenated names common in German naming' });
+            }
+
+            // Academic titles might suggest Western academia
+            if (/\b(prof|dr|professor|phd)\b/i.test(name)) {
+                suggestions.push({ nationality: 'Academic', flag: '🎓', reason: 'Contains academic title' });
+            }
+
+            // Single character initials (often Western)
+            if (/\b[A-Z]\b/.test(name)) {
+                suggestions.push({ nationality: 'Western', flag: '🌍', reason: 'Contains single-letter initials (Western style)' });
+            }
+
+            // Very long names might be compound/international
+            if (name.length > 25) {
+                suggestions.push({ nationality: 'International', flag: '🌐', reason: 'Very long name suggests compound/international origin' });
+            }
+
+            // Default suggestion
+            if (suggestions.length === 0) {
+                suggestions.push({ nationality: 'European', flag: '🇪🇺', reason: 'No clear patterns detected, likely European' });
+            }
+
+            return suggestions.slice(0, 3); // Return top 3 suggestions
+        }
+
+        // Show unknown names analysis dialog
+        function showUnknownNamesAnalysis(analysisResults) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.onclick = () => closeUnknownAnalysis();
+
+            const dialog = document.createElement('div');
+            dialog.className = 'nationality-selector';
+            dialog.style.maxWidth = '600px';
+            dialog.style.maxHeight = '80vh';
+            
+            const unknownCount = analysisResults.length;
+            dialog.innerHTML = `
+                <h3>🔍 Unknown Names Analysis (${unknownCount} names found)</h3>
+                <p>Here are names that couldn't be automatically categorized with suggested nationalities:</p>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${analysisResults.map((result, index) => `
+                        <div style="border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 8px; background: #f9f9f9;">
+                            <h4 style="margin: 0 0 10px 0; color: #333;">${index + 1}. ${result.name}</h4>
+                            <div style="margin-left: 20px;">
+                                ${result.suggestions.map((suggestion, idx) => `
+                                    <button class="nationality-option" onclick="setNationality('${result.name}', '${suggestion.nationality}', '${suggestion.flag}')" 
+                                            style="margin: 3px 0; font-size: 12px; padding: 6px 10px;">
+                                        ${suggestion.flag} ${suggestion.nationality}
+                                        <br><small style="color: #666; font-style: italic;">${suggestion.reason}</small>
+                                    </button>
+                                `).join('')}
+                                <button class="nationality-option" onclick="showNationalitySelector('${result.name}')" 
+                                        style="background: #007bff; color: white; margin: 3px 0; font-size: 12px; padding: 6px 10px;">
+                                    🏳️ Choose Different
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                    <button class="nationality-option" onclick="closeUnknownAnalysis()" 
+                            style="background: #6c757d; color: white; width: 100%;">
+                        Close Analysis
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(dialog);
+        }
+
+        // Close unknown names analysis
+        function closeUnknownAnalysis() {
+            const overlay = document.querySelector('.modal-overlay');
+            const dialog = document.querySelector('.nationality-selector');
+            if (overlay) overlay.remove();
+            if (dialog) dialog.remove();
+        }
+
         // Auto-link conversion function
         function convertLinksToClickable(text) {
             const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -1055,7 +1316,7 @@
         function createNameItem(name, index) {
             const hasNote = notesMemory.hasNote(name);
             const note = notesMemory.getNote(name);
-            const nationality = guessNationality(name);
+            const nationality = guessNationalityWithOverride(name);
             const isRecommended = recommendedSupervisors.includes(name);
             const isSelected = selectedPhdCandidates.includes(name);
             const nameId = `name-${index}`;
@@ -1106,7 +1367,7 @@
                 const matchesSearch = name.toLowerCase().includes(searchTerm);
                 const hasNote = notesMemory.hasNote(name);
                 const isSelected = selectedPhdCandidates.includes(name);
-                const nationality = guessNationality(name).nationality;
+                const nationality = guessNationalityWithOverride(name).nationality;
                 
                 let matchesFilter = true;
                 if (filterType === 'with-notes') {
@@ -1137,7 +1398,7 @@
             // Calculate country statistics for filtered names
             const countryStats = {};
             filteredNames.forEach(name => {
-                const nationality = guessNationality(name).nationality;
+                const nationality = guessNationalityWithOverride(name).nationality;
                 countryStats[nationality] = (countryStats[nationality] || 0) + 1;
             });
             
