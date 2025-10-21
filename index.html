@@ -311,6 +311,7 @@
             <button class="save-note" onclick="showSelectedList()">View Selected List</button>
             <button class="clear-note" onclick="clearAllSelections()">Clear All</button>
             <button class="save-note" onclick="analyzeUnknownNames()" style="background-color: #17a2b8;">🔍 Analyze Unknown Names</button>
+            <button class="save-note" onclick="testTableNames()" style="background-color: #28a745;">🧪 Test Table Names</button>
         </div>
         
         <div class="search-container">
@@ -699,9 +700,9 @@
                 'Chinese': {
                     flag: '🇨🇳',
                     patterns: [
-                        /\b(wei|qi|yuki|mingfei|siyu|yuxia|jiancheng|guoying|xiaoxiang|xiaojue|shangzhe|fanny yang|angel chang)\b/,
+                        /\b(renjie|liao|wei|qi|yuki|mingfei|siyu|yuxia|jiancheng|guoying|xiaoxiang|xiaojue|shangzhe|fanny yang|angel chang)\b/,
                         /\b(wei|qi|yuki|mingfei|siyu|yuxia|jiancheng|fanny|angel)\b/,
-                        /(wang|li|zhang|liu|chen|yang|zhao|huang|zhou|wu|xu|sun|ma|zhu|hu|guo|lin|he|gao|luo|zheng|liang|xie|tang|song|xu|deng|han|feng|cao|peng|zeng|xiao|tian|dong|pan|yuan|cai|jiang|yu|du|ye|cheng|su|wei|lu|ding|ren|shen|yao|lu|jiang|cui|qian|tan|lu|zou|shi|meng|xue|duan|lei|long|shi|tao|he|gu|hou|shao|mao|wan|qiu|qin|jiang|yin|bo|kong|bai|cui|kang|mao)$/,
+                        /(wang|li|zhang|liu|chen|yang|zhao|huang|zhou|wu|xu|sun|ma|zhu|hu|guo|lin|he|gao|luo|zheng|liang|xie|tang|song|xu|deng|han|feng|cao|peng|zeng|xiao|tian|dong|pan|yuan|cai|jiang|yu|du|ye|cheng|su|wei|lu|ding|ren|shen|yao|lu|jiang|cui|qian|tan|lu|zou|shi|meng|xue|duan|lei|long|shi|tao|he|gu|hou|shao|mao|wan|qiu|qin|jiang|yin|bo|kong|bai|cui|kang|mao|liao)$/,
                         /(ang|ing|ong|eng|ian|uan|uang|iang)$/
                     ]
                 },
@@ -719,10 +720,10 @@
                 'Dutch': {
                     flag: '🇳🇱',
                     patterns: [
-                        /\b(tim van|madelon|jilles)\b/,
-                        /\b(madelon)\b/,
+                        /\b(rosanne|rademaker|sofie|valk|tim van|madelon|jilles)\b/,
+                        /\b(rosanne|sofie|madelon)\b/,
                         /(van|de|der|den|ten|ter|op|aan|bij|in|onder|over|uit|voor|na|tegen|tot|vanaf|volgens|tijdens|binnen|buiten|zonder|met|door|naar|voor|achter|boven|onder|tussen|rond|om)(\s)/,
-                        /(berg|burg|hof|hoef|dijk|donk|horst|huizen|kamp|meer|wijk|zaal|beek|broek|daal|gaard|haven|heide|kerk|plaats|stad|water|weg|woud)$/
+                        /(berg|burg|hof|hoef|dijk|donk|horst|huizen|kamp|meer|wijk|zaal|beek|broek|daal|gaard|haven|heide|kerk|plaats|stad|water|weg|woud|rademaker|valk)$/
                     ]
                 },
                 // Polish
@@ -749,9 +750,9 @@
                 'Turkish': {
                     flag: '🇹🇷',
                     patterns: [
-                        /\b(emine|asli)\b/,
-                        /\b(emine|asli)\b/,
-                        /(oğlu|özkan|özdemir|öztürk|özen|özer|çelik|çetin|şahin|şen|yılmaz|yıldız|yıldırım|kara|kaya|koç|kurt|arslan|aydın|bayrak|demir|doğan|erdoğan|güneş|tekin|polat|şimşek|turan|uysal|yavuz|akın|acar|akman|ateş|aktaş|altın|aslan|ataş|ayan|baş|can|duman|erdem|esen|genç|gül|işık|kılıç|oral|özkan|sahin|taş|uçar|ünlü|uyar|vardar|yaşar)$/,
+                        /\b(hakan|bilen|esra|bulbul|emine|asli)\b/,
+                        /\b(emine|asli|esra)\b/,
+                        /(oğlu|özkan|özdemir|öztürk|özen|özer|çelik|çetin|şahin|şen|yılmaz|yıldız|yıldırım|kara|kaya|koç|kurt|arslan|aydın|bayrak|demir|doğan|erdoğan|güneş|tekin|polat|şimşek|turan|uysal|yavuz|akın|acar|akman|ateş|aktaş|altın|aslan|ataş|ayan|baş|can|duman|erdem|esen|genç|gül|işık|kılıç|oral|özkan|sahin|taş|uçar|ünlü|uyar|vardar|yaşar|bilen|bulbul)$/,
                         /(oğlu|özkan|çelik|şahin|yılmaz|yıldız)$/
                     ]
                 },
@@ -759,9 +760,9 @@
                 'Indian': {
                     flag: '🇮🇳',
                     patterns: [
-                        /\b(abhinav|mrinmaya|suvrit)\b/,
+                        /\b(rupak|majumdar|abhinav|mrinmaya|suvrit)\b/,
                         /\b(sarath|priya|anita|kavya|meera|sita|uma|devi)\b/,
-                        /(sharma|patel|singh|kumar|gupta|agarwal|verma|khan|jain|bansal|mehta|shah|joshi|malhotra|arora|chopra|sinha|saxena|aggarwal|mittal|kapoor|rao|reddy|nair|iyer|menon|pillai|krishnan|raman|swamy|bhat|hegde|kulkarni|desai|gandhi|thakur|pandey|mishra|tiwari|singh|yadav|das|roy|sen|ghosh|mukherjee|chatterjee|bhattacharya|banerjee|dutta|chakraborty|paul|jana|mitra|kar|saha|bose|chandra|dey|lahiri|das|ray|bag|pal|mondal|halder|sarkar|khan|ahmed|ali|hassan|hussain|qureshi|ansari|siddiqui|rizvi|malik|iqbal|shah|shaikh|pathan|syed|zaidi)$/,
+                        /(sharma|patel|singh|kumar|gupta|agarwal|verma|khan|jain|bansal|mehta|shah|joshi|malhotra|arora|chopra|sinha|saxena|aggarwal|mittal|kapoor|rao|reddy|nair|iyer|menon|pillai|krishnan|raman|swamy|bhat|hegde|kulkarni|desai|gandhi|thakur|pandey|mishra|tiwari|singh|yadav|das|roy|sen|ghosh|mukherjee|chatterjee|bhattacharya|banerjee|dutta|chakraborty|paul|jana|mitra|kar|saha|bose|chandra|dey|lahiri|das|ray|bag|pal|mondal|halder|sarkar|khan|ahmed|ali|hassan|hussain|qureshi|ansari|siddiqui|rizvi|malik|iqbal|shah|shaikh|pathan|syed|zaidi|majumdar)$/,
                         /(esh|ash|ish|osh|ush|ani|ini|oni|uni|ari|eri|ori|uri)$/
                     ]
                 },
@@ -788,9 +789,10 @@
                 'Romanian': {
                     flag: '🇷🇴',
                     patterns: [
-                        /\b(radu|silvana)\b/,
+                        /\b(dan|radu|silvana|nicu)\b/,
                         /\b(silvana)\b/,
-                        /(escu|eanu|ă|ică|oiu|oaie)$/
+                        /(escu|eanu|ă|ică|oiu|oaie)$/,
+                        /\b(alistarh|sebe)\b/
                     ]
                 },
                 // Portuguese/Brazilian
@@ -813,8 +815,8 @@
                 'Spanish': {
                     flag: '🇪🇸',
                     patterns: [
-                        /\b(isabel|laura)\b/,
-                        /(garcia|rodriguez|martinez|lopez|gonzalez|hernandez|perez|sanchez|ramirez|cruz|flores|gomez|morales|vazquez|jimenez|ruiz|diaz|moreno|muñoz|alvarez|romero|gutierrez|navarro|torres|dominguez|ramos|serrano|blanco|suarez|molina|castro|ortega|delgado|ortiz|marin|vargas|rubio|iglesias|medina|garrido|santos|cortes|lozano|guerrero|cano|prieto|mendez|calvo|sanz)$/,
+                        /\b(nuria|oliver|isabel|laura)\b/,
+                        /(garcia|rodriguez|martinez|lopez|gonzalez|hernandez|perez|sanchez|ramirez|cruz|flores|gomez|morales|vazquez|jimenez|ruiz|diaz|moreno|muñoz|alvarez|romero|gutierrez|navarro|torres|dominguez|ramos|serrano|blanco|suarez|molina|castro|ortega|delgado|ortiz|marin|vargas|rubio|iglesias|medina|garrido|santos|cortes|lozano|guerrero|cano|prieto|mendez|calvo|sanz|oliver)$/,
                         /(ez|az|iz|oz|uz|ez|ón|án|én|ín|ún)$/
                     ]
                 },
@@ -864,6 +866,71 @@
                         /\b(azerbaijan|baku|azeri|azerbaijani)\b/,
                         /(ov|ova|ev|eva|zade|zadeh|oglu|oghlu|ali|bey|khan)$/,
                         /(aliyev|mammadov|hasanov|huseynov|gasimov|ismayilov|abdullayev|rahimov|karimov|musayev)$/
+                    ]
+                },
+                // Serbian
+                'Serbian': {
+                    flag: '🇷🇸',
+                    patterns: [
+                        /\b(ilija|bogunovic|natasa|przulj)\b/,
+                        /\b(milos|marko|stefan|nikola|vladimir|aleksandar|nenad|dragan|zoran|goran|predrag|miroslav|slobodan|dusan|milan|branko|radovan|rajko|dejan|srdjan|bojan|darko|dalibor|miljan|jovana|ana|marija|jelena|milica|tamara|sandra|danijela|jasmina|vesna|snezana|ljiljana|gordana|zorica|radmila|slavica|dragana|milka|biljana|nada|mira)\b/,
+                        /(ovic|evic|ic|ac|ek|ak|ov|ev|in|an|on|en|un)$/
+                    ]
+                },
+                // Hungarian
+                'Hungarian': {
+                    flag: '🇭🇺',
+                    patterns: [
+                        /\b(gergely|neu)\b/,
+                        /\b(ferenc|janos|istvan|laszlo|sandor|zoltan|geza|attila|tibor|bela|mihaly|gabor|peter|andras|gyorgy|imre|karoly|jozsef|adam|balazs|daniel|mate|zsolt|roland|agnes|maria|eva|katalin|erzsebet|margit|judit|andrea|krisztina|aniko|gabriella|zsuzsanna|monika|beata|emese|orsolya|eszter|dora|petra|rita|tunde|edit|ilona|klara|reka|nora|kinga|viktoria|anita|timea|bernadett|szilvia|melinda|brigitta|renata|csilla|henrietta)\b/,
+                        /(nagy|kovacs|toth|szabo|horvath|varga|kiss|molnar|nemeth|farkas|balogh|papp|takacs|juhasz|lakatos|meszaros|olah|simon|racz|fekete|szucs|kerekes|halasz|lengyel|szalai|boros|kelemen|magyar|gal|koncz|Urban|muller|katona|jakab|bogdan|bacso|gonczi|feher|torok|adam|balog|somogyi|pap|orosz|lukacs|poor|nagy|farkass|balazs|csapo|kocsis|kiraly|sari|biro|gulyas|barta|fodor|kosa|pal|pataki|antal|pentek|fulop|vass|banki|dobos|vegh|sebestyen|veres|varga|zoltan|csonka|hegyi|rozsa|solyom|fulop|benke|berki|huszar|zentai|szocs|bango|szilagyi|fabian)$/,
+                        /(fy|ny|gy|ty|ly|sz|cs|zs|dz|dzs)$/
+                    ]
+                },
+                // Thai
+                'Thai': {
+                    flag: '🇹🇭',
+                    patterns: [
+                        /\b(krikamol|muandet)\b/,
+                        /\b(somchai|somsak|surasak|surachai|sombat|siriporn|siriluck|siriwan|sunisa|supaporn|suwannee|pensri|pranee|porntip|ratana|ratchanee|sawittree|siripat|sukanya|sumitra|sumontha|anan|anand|aphichat|apirak|arin|arun|charoen|chatri|chuay|danai|jirawat|kamon|kamol|kiet|komsan|kriangsak|manit|niran|nithi|nopporn|paiboon|paisal|pakorn|patiparn|phairat|phanuwat|pichet|piyapat|pongsak|praphan|preecha|pricha|rachata|rawin|samart|sanguan|sanya|sarawut|sathit|sawai|sirichai|somnuk|songkran|sriphan|subin|suchart|sudjai|sukit|sumet|suphot|surachart|suraphon|surasak|suriya|suwan|thana|thani|thanin|thanom|thawatchai|theeraphong|thiti|udom|viroj|visanu|walai|wanchai|weerawat|wicha|wichian|wichit|wira|wirat|wisan|yongyuth)\b/,
+                        /(chai|wong|sri|porn|wut|kit|sit|nat|rat|wat|san|som|sun|cha|pha|tha|kan|kam|ran|wan|sak|nan|tan|pan|man|ban|han|gan|lan|yan|dan)$/
+                    ]
+                },
+                // Syrian
+                'Syrian': {
+                    flag: '🇸🇾',
+                    patterns: [
+                        /\b(dima|damen)\b/,
+                        /\b(ahmad|ahmed|ali|mohammed|omar|hassan|hussein|khalil|said|yusuf|ibrahim|ismail|mahmoud|abdul|abdel|walid|rami|sami|tariq|fadi|ghassan|mazen|nizar|osama|riad|samir|wael|ziad|fatima|amal|layla|nour|reem|sara|dina|lina|rana|rita|maya|nada|rania|hala|mona|nora|yara|zara|mariam|ghada|rula|salam|widad|yasmin|zahra|amina|asma|dalal|farah|hanan|iman|khadija|lamia|maha|najla|rasha|sahar|wafa|zeina)\b/,
+                        /(al|el|abu|bin|ibn|assad|damascus|aleppo|homs|latakia|tartus|deir|raqqa|hasaka|idlib|daraya|douma|ghouta)$/
+                    ]
+                },
+                // Czech
+                'Czech': {
+                    flag: '🇨🇿',
+                    patterns: [
+                        /\b(josef|sivic)\b/,
+                        /\b(jan|petr|pavel|tomas|martin|david|michal|jakub|lukas|adam|ondrej|milan|jiri|karel|stanislav|vladimir|frantisek|josef|vaclav|zdenek|jaroslav|oldrich|ladislav|ales|roman|robert|marek|daniel|richard|patrik|dominik|anna|marie|jana|eva|hana|lenka|katerina|alena|vera|zuzana|barbora|tereza|petra|veronika|jana|ivana|martina|jitka|helena|michaela|marketa|andrea|ludmila|kristyna|sarka|jarmila|marie|stanislava|dana|milada|libuse|bozena|anna|vlasta|frantiska|marie|irena|marie|olga|ruzena|marie|anezka|marie|jaroslava|marie|alzbeta|marie)\b/,
+                        /(ova|ek|ak|ik|yk|nova|kova|ova|ska|cka|ny|ky|ty|ly|ry|sy|vy|zy|hy|my|py|dy|fy|gy|by|cy|chy|shy|thy|zhy|phy|ghy|why|khy|lhy|rhy|shy|thy|vhy|zhy|chy|dhy|fhy|ghy|jhy|khy|mhy|nhy|phy|rhy|shy|thy|vhy|why|xhy|yhy|zhy)$/,
+                        /(novak|svoboda|novotny|dvorak|cerny|prochazka|krejci|havlova|horacek|jerabek|kolar|nemec|pokorny|pospisil|reznicek|ruzicka|simek|stanek|stepan|travnicek|urban|vesely|vlcek|vorlicek|wagner|zeman|fiala|hajek|holub|horak|jelinek|kafka|kopecky|kratochvil|krejcova|kriz|kucera|marek|musil|navratil|nedved|pavelka|pesek|pich|polak|popelka|richter|sedlacek|skala|slaby|smid|sokol|spacek|spurny|sykora|tomek|turek|vacek|valenta|vavra|vesely|vitek|vlach|vortek|zahradnik|zak|zima)$/
+                    ]
+                },
+                // Israeli
+                'Israeli': {
+                    flag: '🇮🇱',
+                    patterns: [
+                        /\b(sagie|benaim|or|litany)\b/,
+                        /\b(avi|david|yosef|michael|daniel|ron|amit|alex|eitan|guy|tal|lior|roi|yaron|gal|oren|asaf|amir|shay|dor|itay|noam|idan|yonatan|nir|omer|shai|tomer|maya|noa|shira|yael|michal|hila|dana|sharon|roni|liat|rinat|merav|sigal|einat|keren|osnat|miri|efrat|iris|dorit|limor|yifat|orna|sarit|ronit|tal|chen|galia|orly|inbal|adi|noy|maayan|mor|shani|karin|tali|gila|liora|malka|ruth|esther|naomi|sarah|rachel|leah|miriam|rebecca|judith|deborah|hannah|abigail|elizabeth|mary)\b/,
+                        /(berg|stein|man|cohen|levy|mizrahi|peretz|biton|dahan|avraham|friedman|katz|israeli|goldberg|rosenberg|shapiro|weiss|klein|rosen|schwartz|ben|bar|zur|gal|paz|nir|tal|ron|guy|roy|lev|mor|raz|dan|gil|or|ad|el|zvi|hai|dor|alon|erez|gadi|ilan|yair|boaz|yuval|ehud|rami|ari|dov|moshe|yehuda|shlomo|abraham|isaac|jacob|samuel|benjamin|joseph|aaron|caleb|joshua|nathan|simon|adam|noah|amos|ezra|isaiah|jonah|micah|uri|gideon|ariel|omri|roee|liam|ethan|elias|ori|nevo|sela|carmi|porat|shamir|navon|keren|dagan|harari|shaked|segev|sapir|regev|azoulay|malka|sabbag|swissa|ohana|moyal|elbaz|bouzaglo|ben|bar|israeli|jerusalem|tel|aviv|haifa|eilat|netanya|ashdod|rishon|lezion|petah|tikva|holon|bnei|brak|ramat|gan|ashkelon|bat|yam|kfar|saba|herzliya|modiin|nazareth|akko|tiberias|safed)$/
+                    ]
+                },
+                // Iranian/Persian
+                'Iranian': {
+                    flag: '🇮🇷',
+                    patterns: [
+                        /\b(nassir|navab)\b/,
+                        /\b(ali|hassan|mohammed|ahmad|reza|mohammad|mehdi|hossein|amir|abbas|hamid|majid|saeed|javad|masoud|nasser|farid|karim|omid|babak|darius|cyrus|kourosh|rostam|arash|shahram|behrouz|farhad|kamran|keyvan|peyman|siavash|vahid|yashar|maryam|fatima|zahra|nasrin|soraya|shirin|golnar|laleh|setareh|bahar|niloufar|roya|sara|samira|sima|vida|ziba|azadeh zamanpour|gholi|karimi|hosseini|ahmadi|mohammadi|rahmani|moradi|salehi|khodadadi|ghasemi|hajati|shirzad|shirani|nazemi|nabavi|tavakoli|jafari|mirzaei|rostami|zare|hatami|abbasi|mousavi|kazemi|sohrabi|sharifi|tabrizi|esfahani|mashhadi|tehrani|shirazi|yazdi|ardabili|gilani|mazandarani|golestani|qomi|bojnordi|sabzevar)$/,
+                        /(pour|zadeh|ian|nia|rad|far|mehr|shah|abad|bad|bod|gah|kuh|rud|sar|var|zar|jer|kes|kan|gan|tan|pan|ban|han|wan|ran|jan|man|san|dan|fan|lan|van|gol|kol|nol|rol|sol|tol|vol|pol|fol|jol|mol|hol|dol|bol|lol|yol|xol|zol|wol|qol|kol|gol|fol|eol|iol|uol|aol|ool)$/
                     ]
                 }
             };
@@ -988,6 +1055,13 @@
                 { name: 'Korean', flag: '🇰🇷' },
                 { name: 'Vietnamese', flag: '🇻🇳' },
                 { name: 'Azerbaijani', flag: '🇦🇿' },
+                { name: 'Serbian', flag: '🇷🇸' },
+                { name: 'Hungarian', flag: '🇭🇺' },
+                { name: 'Thai', flag: '🇹🇭' },
+                { name: 'Syrian', flag: '🇸🇾' },
+                { name: 'Czech', flag: '🇨🇿' },
+                { name: 'Israeli', flag: '🇮🇱' },
+                { name: 'Iranian', flag: '🇮🇷' },
                 { name: 'European', flag: '🇪🇺' },
                 { name: 'Western', flag: '🌍' },
                 { name: 'Academic', flag: '🎓' },
@@ -1159,6 +1233,79 @@
 
         // Close unknown names analysis
         function closeUnknownAnalysis() {
+            const overlay = document.querySelector('.modal-overlay');
+            const dialog = document.querySelector('.nationality-selector');
+            if (overlay) overlay.remove();
+            if (dialog) dialog.remove();
+        }
+
+        // Test specific names from the table
+        function testTableNames() {
+            const testNames = [
+                'Dan Alistarh',
+                'Serge Belongie', 
+                'Sagie Benaim',
+                'Hakan Bilen',
+                'Ilija Bogunovic',
+                'Esra Bulbul',
+                'Dima Damen',
+                'Nicolas Flammarion',
+                'Gergely Neu',
+                'Nuria Oliver',
+                'Nassir Navab',
+                'Nicu Sebe',
+                'Josef Sivic',
+                'Renjie Liao',
+                'Or Litany',
+                'Rupak Majumdar',
+                'Krikamol Muandet',
+                'Natasa Przulj',
+                'Rosanne Rademaker',
+                'Sofie Valk'
+            ];
+
+            const results = testNames.map(name => {
+                const nationality = guessNationalityWithOverride(name);
+                return { name, nationality: nationality.nationality, flag: nationality.flag };
+            });
+
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.onclick = () => closeTestResults();
+
+            const dialog = document.createElement('div');
+            dialog.className = 'nationality-selector';
+            dialog.style.maxWidth = '700px';
+            dialog.style.maxHeight = '80vh';
+            
+            dialog.innerHTML = `
+                <h3>🧪 Table Names Detection Test</h3>
+                <p>Testing nationality detection for names from your research table:</p>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    ${results.map((result, index) => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; background: ${result.nationality === 'Unknown' ? '#ffebee' : '#e8f5e8'};">
+                            <span style="font-weight: bold;">${result.name}</span>
+                            <span>${result.flag} ${result.nationality}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                    <p style="margin: 0; font-size: 14px; color: #666;">
+                        ✅ Green = Detected | ❌ Red = Still Unknown
+                    </p>
+                    <button class="nationality-option" onclick="closeTestResults()" 
+                            style="background: #6c757d; color: white; width: 100%; margin-top: 10px;">
+                        Close Test Results
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(dialog);
+        }
+
+        // Close test results
+        function closeTestResults() {
             const overlay = document.querySelector('.modal-overlay');
             const dialog = document.querySelector('.nationality-selector');
             if (overlay) overlay.remove();
