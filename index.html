@@ -341,6 +341,18 @@
                 <option value="Portuguese">🇵🇹 Portuguese</option>
                 <option value="Lithuanian">🇱🇹 Lithuanian</option>
                 <option value="Spanish">🇪🇸 Spanish</option>
+                <option value="Russian">🇷🇺 Russian</option>
+                <option value="Serbian">🇷🇸 Serbian</option>
+                <option value="Hungarian">🇭🇺 Hungarian</option>
+                <option value="Thai">🇹🇭 Thai</option>
+                <option value="Syrian">🇸🇾 Syrian</option>
+                <option value="Czech">🇨🇿 Czech</option>
+                <option value="Israeli">🇮🇱 Israeli</option>
+                <option value="Iranian">🇮🇷 Iranian</option>
+                <option value="Austrian">🇦🇹 Austrian</option>
+                <option value="American">🇺🇸 American</option>
+                <option value="Canadian">🇨🇦 Canadian</option>
+                <option value="Danish">🇩🇰 Danish</option>
                 <option value="European">🇪🇺 European</option>
                 <option value="Unknown">🌍 Unknown</option>
             </select>
@@ -652,6 +664,55 @@
             const nameLower = name.toLowerCase();
             const firstName = nameLower.split(' ')[0];
             const lastName = nameLower.split(' ').pop();
+            
+            // Hardcoded name-to-nationality mapping (highest priority)
+            const hardcodedNationalities = {
+                'dan alistarh': { nationality: 'Romanian', flag: '🇷🇴' },
+                'serge belongie': { nationality: 'American', flag: '🇺🇸' },
+                'sagie benaim': { nationality: 'Israeli', flag: '🇮🇱' },
+                'hakan bilen': { nationality: 'Turkish', flag: '🇹🇷' },
+                'ilija bogunovic': { nationality: 'Serbian', flag: '🇷🇸' },
+                'esra bulbul': { nationality: 'Turkish', flag: '🇹🇷' },
+                'andrea cavallaro': { nationality: 'Italian', flag: '🇮🇹' },
+                'cecilia clementi': { nationality: 'Italian', flag: '🇮🇹' },
+                'daniel cremers': { nationality: 'German', flag: '🇩🇪' },
+                'dima damen': { nationality: 'Syrian', flag: '🇸🇾' },
+                'maximilian dax': { nationality: 'German', flag: '🇩🇪' },
+                'nicolas flammarion': { nationality: 'French', flag: '🇫🇷' },
+                'nicola gatti': { nationality: 'Italian', flag: '🇮🇹' },
+                'moritz helmstaedter': { nationality: 'German', flag: '🇩🇪' },
+                'sepp hochreiter': { nationality: 'Austrian', flag: '🇦🇹' },
+                'leonardo impett': { nationality: 'Italian', flag: '🇮🇹' },
+                'almut-sophia koepke': { nationality: 'German', flag: '🇩🇪' },
+                'heinz koeppl': { nationality: 'German', flag: '🇩🇪' },
+                'renjie liao': { nationality: 'Chinese', flag: '🇨🇳' },
+                'or litany': { nationality: 'Israeli', flag: '🇮🇱' },
+                'jakob macke': { nationality: 'German', flag: '🇩🇪' },
+                'rupam mahmood': { nationality: 'Canadian', flag: '🇨🇦' },
+                'rupak majumdar': { nationality: 'Indian', flag: '🇮🇳' },
+                'krikamol muandet': { nationality: 'Thai', flag: '🇹🇭' },
+                'nassir navab': { nationality: 'Iranian', flag: '🇮🇷' },
+                'gergely neu': { nationality: 'Hungarian', flag: '🇭🇺' },
+                'mathias niepert': { nationality: 'German', flag: '🇩🇪' },
+                'nuria oliver': { nationality: 'Spanish', flag: '🇪🇸' },
+                'm. alessandra papa': { nationality: 'Italian', flag: '🇮🇹' },
+                'jonas peters': { nationality: 'German', flag: '🇩🇪' },
+                'edoardo ponti': { nationality: 'Italian', flag: '🇮🇹' },
+                'natasa przulj': { nationality: 'Serbian', flag: '🇷🇸' },
+                'dierk raabe': { nationality: 'German', flag: '🇩🇪' },
+                'rosanne rademaker': { nationality: 'Dutch', flag: '🇳🇱' },
+                'nicu sebe': { nationality: 'Romanian', flag: '🇷🇴' },
+                'josef sivic': { nationality: 'Czech', flag: '🇨🇿' },
+                'justus thies': { nationality: 'German', flag: '🇩🇪' },
+                'sofie valk': { nationality: 'Dutch', flag: '🇳🇱' },
+                'tejs vegge': { nationality: 'Danish', flag: '🇩🇰' },
+                'arno villringer': { nationality: 'German', flag: '🇩🇪' }
+            };
+            
+            // Check hardcoded mapping first
+            if (hardcodedNationalities[nameLower]) {
+                return hardcodedNationalities[nameLower];
+            }
             
             // Define patterns for different nationalities
             const patterns = {
@@ -1062,6 +1123,10 @@
                 { name: 'Czech', flag: '🇨🇿' },
                 { name: 'Israeli', flag: '🇮🇱' },
                 { name: 'Iranian', flag: '🇮🇷' },
+                { name: 'Austrian', flag: '🇦🇹' },
+                { name: 'American', flag: '🇺🇸' },
+                { name: 'Canadian', flag: '🇨🇦' },
+                { name: 'Danish', flag: '🇩🇰' },
                 { name: 'European', flag: '🇪🇺' },
                 { name: 'Western', flag: '🌍' },
                 { name: 'Academic', flag: '🎓' },
@@ -1248,20 +1313,40 @@
                 'Hakan Bilen',
                 'Ilija Bogunovic',
                 'Esra Bulbul',
+                'Andrea Cavallaro',
+                'Cecilia Clementi',
+                'Daniel Cremers',
                 'Dima Damen',
+                'Maximilian Dax',
                 'Nicolas Flammarion',
-                'Gergely Neu',
-                'Nuria Oliver',
-                'Nassir Navab',
-                'Nicu Sebe',
-                'Josef Sivic',
+                'Nicola Gatti',
+                'Moritz Helmstaedter',
+                'Sepp Hochreiter',
+                'Leonardo Impett',
+                'Almut-Sophia Koepke',
+                'Heinz Koeppl',
                 'Renjie Liao',
                 'Or Litany',
+                'Jakob Macke',
+                'Rupam Mahmood',
                 'Rupak Majumdar',
                 'Krikamol Muandet',
+                'Nassir Navab',
+                'Gergely Neu',
+                'Mathias Niepert',
+                'Nuria Oliver',
+                'M. Alessandra Papa',
+                'Jonas Peters',
+                'Edoardo Ponti',
                 'Natasa Przulj',
+                'Dierk Raabe',
                 'Rosanne Rademaker',
-                'Sofie Valk'
+                'Nicu Sebe',
+                'Josef Sivic',
+                'Justus Thies',
+                'Sofie Valk',
+                'Tejs Vegge',
+                'Arno Villringer'
             ];
 
             const results = testNames.map(name => {
