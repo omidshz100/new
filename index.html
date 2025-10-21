@@ -408,6 +408,7 @@
                 <div class="ai-controls">
                     <button class="save-note" onclick="saveAiPrompt()">💾 Save Prompt</button>
                     <button class="save-note" onclick="loadDefaultPrompt()" style="background-color: #6c757d;">🔄 Reset to Default</button>
+                    <button class="save-note" onclick="clearOldResearch()" style="background-color: #dc3545;">🗑️ Clear Cache</button>
                 </div>
             </div>
             <div class="ai-status" id="aiStatus">Ready to research professors</div>
@@ -2297,8 +2298,23 @@ Note: This is a demo research response due to browser security restrictions. Ins
             console.log('Display updated. Check if note appears in UI.');
         }
 
+        // Function to clear old cached research
+        function clearOldResearch() {
+            console.log('Clearing old research cache...');
+            
+            // Clear all professor notes to remove old demo responses
+            localStorage.removeItem('names-notes');
+            localStorage.removeItem('professorNotes'); // Remove old key too
+            notesMemory.notes = {};
+            
+            // Refresh display
+            populateNamesList();
+            showStatus('✅ Cleared old research cache - try AI research again!', 'success');
+        }
+
         // Add to window for debugging
         window.testNoteSaving = testNoteSaving;
+        window.clearOldResearch = clearOldResearch;
         window.notesMemory = notesMemory;
     </script>
     </script>
