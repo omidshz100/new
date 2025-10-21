@@ -132,6 +132,71 @@
             background: rgba(0,0,0,0.5);
             z-index: 999;
         }
+        .ai-research-controls {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .ai-research-controls h3 {
+            margin: 0 0 15px 0;
+            color: #495057;
+        }
+        .ai-prompt-section {
+            margin-bottom: 15px;
+        }
+        .ai-prompt-section label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .ai-prompt-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .ai-prompt-input:focus {
+            outline: none;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .ai-controls {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .ai-status {
+            padding: 10px;
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 5px;
+            color: #0c5460;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .ai-status.working {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+        .ai-status.error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .ai-status.success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
         .phd-selector {
             margin-left: 10px;
         }
@@ -312,6 +377,19 @@
             <button class="clear-note" onclick="clearAllSelections()">Clear All</button>
             <button class="save-note" onclick="analyzeUnknownNames()" style="background-color: #17a2b8;">🔍 Analyze Unknown Names</button>
             <button class="save-note" onclick="testTableNames()" style="background-color: #28a745;">🧪 Test Table Names</button>
+        </div>
+
+        <div class="ai-research-controls">
+            <h3>🤖 AI Research Assistant</h3>
+            <div class="ai-prompt-section">
+                <label for="aiPrompt">Custom Research Prompt:</label>
+                <textarea id="aiPrompt" class="ai-prompt-input" rows="3" placeholder="Enter your research prompt here. Use {name} placeholder for the professor's name.">Research {name} - provide a comprehensive summary including: research areas, notable publications, current affiliation, key achievements, and potential PhD supervision opportunities. Include recent work and collaboration potential.</textarea>
+                <div class="ai-controls">
+                    <button class="save-note" onclick="saveAiPrompt()">💾 Save Prompt</button>
+                    <button class="save-note" onclick="loadDefaultPrompt()" style="background-color: #6c757d;">🔄 Reset to Default</button>
+                </div>
+            </div>
+            <div class="ai-status" id="aiStatus">Ready to research professors</div>
         </div>
         
         <div class="search-container">
@@ -1585,6 +1663,7 @@
                             <button class="save-note" data-name="${name}">Save</button>
                             <button class="clear-note" data-name="${name}">Clear</button>
                             <button class="edit-toggle" data-name="${name}">Edit</button>
+                            <button class="ai-research-note" data-name="${name}" style="background-color: #6f42c1; color: white;">🤖 Feed Note AI</button>
                         </div>
                     </div>
                 </div>
@@ -1812,6 +1891,163 @@
             document.getElementById('searchInput').addEventListener('input', filterNames);
             document.getElementById('filterSelect').addEventListener('change', filterNames);
             document.getElementById('countryFilter').addEventListener('change', filterNames);
+
+            // AI Research Prompt save
+            document.getElementById('savePrompt').addEventListener('click', function() {
+                const prompt = document.getElementById('aiPrompt').value;
+                localStorage.setItem('aiResearchPrompt', prompt);
+                showStatus('✅ Prompt saved successfully!', 'success');
+            });
+
+            // Load saved prompt
+            const savedPrompt = localStorage.getItem('aiResearchPrompt');
+            if (savedPrompt) {
+                document.getElementById('aiPrompt').value = savedPrompt;
+            } else {
+                document.getElementById('aiPrompt').value = "Research this professor's academic background, key research areas, notable publications, and current projects. Provide a comprehensive overview of their expertise and recent work.";
+            }
+
+            // Clear all notes
+            document.getElementById('clearAllNotes').addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear all notes? This action cannot be undone.')) {
+                    localStorage.removeItem('professorNotes');
+                    notes = {};
+                    populateNamesList(); // Refresh the display
+                    showStatus('✅ All notes cleared!', 'success');
+                }
+            });
+
+            // Research all professors
+            document.getElementById('researchAll').addEventListener('click', function() {
+                researchAllProfessors();
+            });
+        });
+
+        // AI Research Functions
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('aiStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = `ai-status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            // Auto-hide after 3 seconds for success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        async function researchProfessor(professorName) {
+            const prompt = document.getElementById('aiPrompt').value;
+            const fullPrompt = `Professor Name: ${professorName}\n\nResearch Request: ${prompt}`;
+            
+            try {
+                showStatus(`🔍 Researching ${professorName}...`, 'info');
+                
+                // Note: This is a placeholder for Claude/Sonnet API integration
+                // You'll need to implement the actual API call here
+                const research = await callClaudeAPI(fullPrompt);
+                
+                // Save the research to notes
+                if (!notes) notes = {};
+                const existingNote = notes[professorName] || '';
+                const newNote = existingNote + (existingNote ? '\n\n--- AI Research ---\n' : '') + research;
+                notes[professorName] = newNote;
+                
+                // Save to localStorage
+                localStorage.setItem('professorNotes', JSON.stringify(notes));
+                
+                // Update the display
+                populateNamesList();
+                
+                showStatus(`✅ Research completed for ${professorName}`, 'success');
+                return research;
+                
+            } catch (error) {
+                console.error('Research failed:', error);
+                showStatus(`❌ Research failed for ${professorName}: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        async function researchAllProfessors() {
+            const allNames = Object.keys(hardcodedNationalities);
+            let completed = 0;
+            let failed = 0;
+            
+            showStatus(`🔍 Starting research for ${allNames.length} professors...`, 'info');
+            
+            for (const name of allNames) {
+                try {
+                    await researchProfessor(name);
+                    completed++;
+                    showStatus(`🔍 Progress: ${completed}/${allNames.length} completed`, 'info');
+                    
+                    // Add delay between requests to avoid rate limiting
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                } catch (error) {
+                    failed++;
+                    console.error(`Failed to research ${name}:`, error);
+                }
+            }
+            
+            showStatus(`✅ Research completed! ${completed} successful, ${failed} failed`, completed > 0 ? 'success' : 'error');
+        }
+
+        async function callClaudeAPI(prompt) {
+            // Placeholder function for Claude/Sonnet API integration
+            // This needs to be implemented with your actual API credentials and endpoint
+            
+            // For demonstration, return a mock response
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(`[AI Research Placeholder]
+This is where the AI research would appear. The professor's background, research areas, publications, and current projects would be detailed here based on the custom prompt.
+
+To implement the actual API call, you'll need to:
+1. Set up Claude/Sonnet API credentials
+2. Replace this function with actual API integration
+3. Handle authentication and rate limiting appropriately
+
+Current prompt used: "${prompt}"`);
+                }, 1000);
+            });
+            
+            /* Example actual implementation (uncomment and configure):
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': 'YOUR_API_KEY_HERE',
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model: 'claude-3-sonnet-20240229',
+                    max_tokens: 1000,
+                    messages: [{
+                        role: 'user',
+                        content: prompt
+                    }]
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.content[0].text;
+            */
+        }
+
+        // Add click event listener for individual AI research buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('ai-research-note')) {
+                const professorName = e.target.getAttribute('data-name');
+                researchProfessor(professorName);
+            }
         });
     </script>
     </script>
