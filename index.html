@@ -738,6 +738,23 @@
             "Indrė Žliobaitė"
         ];
 
+        // Global notes variable for AI research functionality
+        let notes = {};
+
+        // Load existing notes from localStorage on page load
+        function loadNotesFromStorage() {
+            try {
+                const stored = localStorage.getItem('professorNotes');
+                notes = stored ? JSON.parse(stored) : {};
+            } catch (error) {
+                console.error('Error loading notes:', error);
+                notes = {};
+            }
+        }
+
+        // Load notes immediately
+        loadNotesFromStorage();
+
         // Nationality detection based on names
         function guessNationality(name) {
             const nameLower = name.toLowerCase();
@@ -1904,7 +1921,7 @@
             if (savedPrompt) {
                 document.getElementById('aiPrompt').value = savedPrompt;
             } else {
-                document.getElementById('aiPrompt').value = "Research this professor's academic background, key research areas, notable publications, and current projects. Provide a comprehensive overview of their expertise and recent work.";
+                document.getElementById('aiPrompt').value = "Research {name} - provide a comprehensive summary including: research areas, notable publications, current affiliation, key achievements, and potential PhD supervision opportunities. Include recent work and collaboration potential.";
             }
 
             // Clear all notes
@@ -1939,8 +1956,14 @@
         }
 
         async function researchProfessor(professorName) {
-            const prompt = document.getElementById('aiPrompt').value;
-            const fullPrompt = `Professor Name: ${professorName}\n\nResearch Request: ${prompt}`;
+            const prompt = document.getElementById('aiPrompt').value.trim();
+            if (!prompt) {
+                showStatus('❌ Please enter a research prompt first!', 'error');
+                return;
+            }
+            
+            // Replace {name} placeholder with actual professor name
+            const fullPrompt = prompt.replace(/\{name\}/g, professorName).replace(/Research \(name\)/g, `Research ${professorName}`);
             
             try {
                 showStatus(`🔍 Researching ${professorName}...`, 'info');
