@@ -2112,87 +2112,31 @@
         }
 
         async function callClaudeAPI(prompt, apiKey) {
-            // Real Claude API implementation - no more demo responses
-            try {
-                console.log('Making real API call to Claude...');
-                console.log('Prompt:', prompt);
-                console.log('API Key present:', !!apiKey);
-                
-                const response = await fetch('https://api.anthropic.com/v1/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': apiKey,
-                        'anthropic-version': '2023-06-01'
-                    },
-                    body: JSON.stringify({
-                        model: 'claude-3-sonnet-20240229',
-                        max_tokens: 2000,
-                        messages: [{
-                            role: 'user',
-                            content: prompt
-                        }]
-                    })
-                });
+            // Simple direct API call to Claude
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey,
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model: 'claude-3-sonnet-20240229',
+                    max_tokens: 2000,
+                    messages: [{
+                        role: 'user',
+                        content: prompt
+                    }]
+                })
+            });
 
-                console.log('Response status:', response.status);
-                
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    console.error('API Error:', errorData);
-                    throw new Error(`API request failed (${response.status}): ${errorData.error?.message || response.statusText}`);
-                }
-
-                const data = await response.json();
-                console.log('API Response received:', data);
-                return data.content[0].text;
-                
-            } catch (error) {
-                console.error('API call failed:', error);
-                
-                // Only use CORS proxy if it's actually a CORS error
-                if (error.message.includes('CORS') || error.name === 'TypeError') {
-                    console.log('Trying CORS proxy...');
-                    return await callClaudeAPIWithProxy(prompt, apiKey);
-                } else {
-                    throw error;
-                }
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
             }
-        }
 
-        async function callClaudeAPIWithProxy(prompt, apiKey) {
-            try {
-                // Try with a CORS proxy
-                const response = await fetch('https://cors-anywhere.herokuapp.com/https://api.anthropic.com/v1/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': apiKey,
-                        'anthropic-version': '2023-06-01',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({
-                        model: 'claude-3-sonnet-20240229',
-                        max_tokens: 2000,
-                        messages: [{
-                            role: 'user',
-                            content: prompt
-                        }]
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(`Proxy API request failed (${response.status}): ${errorData.error?.message || response.statusText}`);
-                }
-
-                const data = await response.json();
-                return data.content[0].text;
-                
-            } catch (error) {
-                console.error('Proxy call also failed:', error);
-                throw new Error(`Both direct and proxy API calls failed. Please check your API key and internet connection. Error: ${error.message}`);
-            }
+            const data = await response.json();
+            return data.content[0].text;
         }
 
         // Add click event listener for individual AI research buttons
