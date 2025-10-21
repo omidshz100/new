@@ -381,6 +381,21 @@
 
         <div class="ai-research-controls">
             <h3>🤖 AI Research Assistant</h3>
+            
+            <div class="ai-api-section" style="margin-bottom: 15px;">
+                <label for="apiKey" style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">
+                    🔑 Claude API Key:
+                </label>
+                <input type="password" id="apiKey" placeholder="sk-ant-..." 
+                       style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: monospace; font-size: 12px; margin-bottom: 5px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <small style="color: #666; font-size: 11px;">
+                        Get your API key from <a href="https://console.anthropic.com" target="_blank" style="color: #007bff;">console.anthropic.com</a>
+                    </small>
+                    <button id="saveApiKey" style="padding: 4px 8px; font-size: 11px; background: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer;">💾 Save</button>
+                </div>
+            </div>
+            
             <div class="ai-prompt-section">
                 <label for="aiPrompt">Custom Research Prompt:</label>
                 <textarea id="aiPrompt" class="ai-prompt-input" rows="3" placeholder="Enter your research prompt here. Use {name} placeholder for the professor's name.">Research {name} - provide a comprehensive summary including: research areas, notable publications, current affiliation, key achievements, and potential PhD supervision opportunities. Include recent work and collaboration potential.</textarea>
@@ -1916,6 +1931,23 @@
                 showStatus('✅ Prompt saved successfully!', 'success');
             });
 
+            // API Key save
+            document.getElementById('saveApiKey').addEventListener('click', function() {
+                const apiKey = document.getElementById('apiKey').value.trim();
+                if (apiKey) {
+                    localStorage.setItem('claudeApiKey', apiKey);
+                    showStatus('✅ API Key saved successfully!', 'success');
+                } else {
+                    showStatus('❌ Please enter a valid API key!', 'error');
+                }
+            });
+
+            // Load saved API key
+            const savedApiKey = localStorage.getItem('claudeApiKey');
+            if (savedApiKey) {
+                document.getElementById('apiKey').value = savedApiKey;
+            }
+
             // Load saved prompt
             const savedPrompt = localStorage.getItem('aiResearchPrompt');
             if (savedPrompt) {
@@ -1957,6 +1989,13 @@
 
         async function researchProfessor(professorName) {
             const prompt = document.getElementById('aiPrompt').value.trim();
+            const apiKey = document.getElementById('apiKey').value.trim();
+            
+            if (!apiKey) {
+                showStatus('❌ Please enter your Claude API key first!', 'error');
+                return;
+            }
+            
             if (!prompt) {
                 showStatus('❌ Please enter a research prompt first!', 'error');
                 return;
@@ -1968,14 +2007,13 @@
             try {
                 showStatus(`🔍 Researching ${professorName}...`, 'info');
                 
-                // Note: This is a placeholder for Claude/Sonnet API integration
-                // You'll need to implement the actual API call here
-                const research = await callClaudeAPI(fullPrompt);
+                const research = await callClaudeAPI(fullPrompt, apiKey);
                 
                 // Save the research to notes
                 if (!notes) notes = {};
                 const existingNote = notes[professorName] || '';
-                const newNote = existingNote + (existingNote ? '\n\n--- AI Research ---\n' : '') + research;
+                const timestamp = new Date().toLocaleDateString();
+                const newNote = existingNote + (existingNote ? '\n\n' : '') + `--- AI Research (${timestamp}) ---\n${research}`;
                 notes[professorName] = newNote;
                 
                 // Save to localStorage
@@ -2019,50 +2057,45 @@
             showStatus(`✅ Research completed! ${completed} successful, ${failed} failed`, completed > 0 ? 'success' : 'error');
         }
 
-        async function callClaudeAPI(prompt) {
-            // Placeholder function for Claude/Sonnet API integration
-            // This needs to be implemented with your actual API credentials and endpoint
-            
-            // For demonstration, return a mock response
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(`[AI Research Placeholder]
-This is where the AI research would appear. The professor's background, research areas, publications, and current projects would be detailed here based on the custom prompt.
+        async function callClaudeAPI(prompt, apiKey) {
+            // Real Claude API implementation
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-3-sonnet-20240229',
+                        max_tokens: 1500,
+                        messages: [{
+                            role: 'user',
+                            content: prompt
+                        }]
+                    })
+                });
 
-To implement the actual API call, you'll need to:
-1. Set up Claude/Sonnet API credentials
-2. Replace this function with actual API integration
-3. Handle authentication and rate limiting appropriately
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`API request failed (${response.status}): ${errorData.error?.message || response.statusText}`);
+                }
 
-Current prompt used: "${prompt}"`);
-                }, 1000);
-            });
-            
-            /* Example actual implementation (uncomment and configure):
-            const response = await fetch('https://api.anthropic.com/v1/messages', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': 'YOUR_API_KEY_HERE',
-                    'anthropic-version': '2023-06-01'
-                },
-                body: JSON.stringify({
-                    model: 'claude-3-sonnet-20240229',
-                    max_tokens: 1000,
-                    messages: [{
-                        role: 'user',
-                        content: prompt
-                    }]
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`API request failed: ${response.status}`);
+                const data = await response.json();
+                return data.content[0].text;
+                
+            } catch (error) {
+                if (error.message.includes('fetch')) {
+                    throw new Error('Network error - please check your internet connection');
+                } else if (error.message.includes('401')) {
+                    throw new Error('Invalid API key - please check your Claude API key');
+                } else if (error.message.includes('429')) {
+                    throw new Error('Rate limit exceeded - please wait a moment and try again');
+                } else {
+                    throw error;
+                }
             }
-            
-            const data = await response.json();
-            return data.content[0].text;
-            */
         }
 
         // Add click event listener for individual AI research buttons
