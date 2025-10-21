@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraped Names</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .names-list {
+            list-style-type: decimal;
+            line-height: 1.6;
+            padding-left: 20px;
+        }
+        .name-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+            transition: all 0.2s;
+        }
+        .name-item:hover {
+            background-color: #f0f8ff;
+            border-color: #bbb;
+        }
+        .name-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .name-text {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .clickable-name {
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .clickable-name:hover {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        .copy-feedback {
+            background-color: #4caf50 !important;
+            color: white !important;
+            transform: scale(1.05);
+        }
+        .nationality-flag {
+            font-size: 18px;
+            margin-right: 5px;
+        }
+        .nationality-text {
+            font-size: 12px;
+            color: #666;
+            font-weight: normal;
+            background-color: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 12px;
+            margin-left: 5px;
+        }
+        .phd-selector {
+            margin-left: 10px;
+        }
+        .phd-checkbox {
+            margin-right: 5px;
+            transform: scale(1.2);
+        }
+        .phd-selected {
+            background-color: #fff3cd !important;
+            border-color: #ffc107 !important;
+        }
+        .phd-counter {
+            background-color: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .selection-controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .recommended-badge {
+            background-color: #dc3545;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        .note-toggle {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.2s;
+        }
+        .note-toggle:hover {
+            background-color: #45a049;
+        }
+        .note-toggle.has-note {
+            background-color: #2196F3;
+        }
+        .note-toggle.has-note:hover {
+            background-color: #1976D2;
+        }
+        .note-section {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .note-section.active {
+            display: block;
+        }
+        .note-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+        .note-display {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            line-height: 1.4;
+            display: none;
+        }
+        .note-display.active {
+            display: block;
+        }
+        .note-display a {
+            color: #007bff;
+            text-decoration: underline;
+            word-break: break-all;
+        }
+        .note-display a:hover {
+            color: #0056b3;
+        }
+        .edit-toggle {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .edit-toggle:hover {
+            background-color: #545b62;
+        }
+        .note-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        .save-note, .clear-note {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .save-note {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .save-note:hover {
+            background-color: #45a049;
+        }
+        .clear-note {
+            background-color: #f44336;
+            color: white;
+        }
+        .clear-note:hover {
+            background-color: #da190b;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .search-filter {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .count {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Names List with Notes</h1>
+        <div class="count" id="nameCount"></div>
+        <p> <a href="https://apply.ellis.eu/applicants/5716/edit" > The resistration Link  </a> </p>
+        
+        <div class="selection-controls">
+            <h3>🎓 PhD Supervisor Selection <span class="phd-counter" id="phdCounter">0/10 selected</span></h3>
+            <p>Select up to 10 potential PhD supervisors from the list below. Recommended candidates are marked with ⭐.</p>
+            <button class="save-note" onclick="showSelectedList()">View Selected List</button>
+            <button class="clear-note" onclick="clearAllSelections()">Clear All</button>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search names...">
+            <select class="search-filter" id="filterSelect">
+                <option value="all">All Names</option>
+                <option value="with-notes">Names with Notes</option>
+                <option value="without-notes">Names without Notes</option>
+                <option value="selected-phd">Selected PhD Candidates</option>
+            </select>
+            <select class="search-filter" id="countryFilter">
+                <option value="all">All Countries</option>
+                <option value="German">🇩🇪 German</option>
+                <option value="Italian">🇮🇹 Italian</option>
+                <option value="French">🇫🇷 French</option>
+                <option value="Arabic/Middle Eastern">🇸🇦 Arabic/Middle Eastern</option>
+                <option value="Chinese">🇨🇳 Chinese</option>
+                <option value="Scandinavian">🇸🇪 Scandinavian</option>
+                <option value="Dutch">🇳🇱 Dutch</option>
+                <option value="Polish">🇵🇱 Polish</option>
+                <option value="Greek">🇬🇷 Greek</option>
+                <option value="Turkish">🇹🇷 Turkish</option>
+                <option value="Indian">🇮🇳 Indian</option>
+                <option value="British">🇬🇧 British</option>
+                <option value="Finnish">🇫🇮 Finnish</option>
+                <option value="Romanian">🇷🇴 Romanian</option>
+                <option value="Portuguese">🇵🇹 Portuguese</option>
+                <option value="Lithuanian">🇱🇹 Lithuanian</option>
+                <option value="Spanish">🇪🇸 Spanish</option>
+                <option value="European">🇪🇺 European</option>
+                <option value="Unknown">🌍 Unknown</option>
+            </select>
+        </div>
+        
+        <div class="names-list" id="namesList">
+        </div>
+    </div>
+
+    <script>
+        // Array of all the names extracted from the original HTML
+        const names = [
+            "Sahar Abdelnabi",
+            "Monika Aidelsburger",
+            "Zeynep Akata",
+            "Dan Alistarh",
+            "Maksym Andriushchenko",
+            "Plamen Angelov",
+            "Yuki Asano",
+            "Isabelle Augenstein",
+            "Giuseppe Averta",
+            "Robert Babuska",
+            "Alison Barker",
+            "Sven Behnke",
+            "Yonatan Belinkov",
+            "Serge Belongie",
+            "Sagie Benaim",
+            "Peter Benner",
+            "Philipp Berens",
+            "Alexandre Bernardino",
+            "Hakan Bilen",
+            "Carsten Binnig",
+            "Bernd Bischl",
+            "Gilles Blanchard",
+            "Christoph Bock",
+            "Ilija Bogunovic",
+            "Aleksandar Bojchevski",
+            "Karsten Borgwardt",
+            "Viacheslav Borovitskiy",
+            "Wieland Brendel",
+            "Thomas Brox",
+            "Marin Bukov",
+            "Esra Bulbul",
+            "Andreas Bulling",
+            "ADRIAN Bunzel",
+            "Rebekka Burkholz",
+            "Gustau Camps-Valls",
+            "Andrea Cavallaro",
+            "Michele Ceriotti",
+            "Nicolò Cesa-Bianchi",
+            "Georgia Chalvatzaki",
+            "Sarath Chandar",
+            "Angel Chang",
+            "Qi Chen",
+            "Carlo Ciliberto",
+            "Cecilia Clementi",
+            "Michael Cochez",
+            "Marcella Cornia",
+            "Iain Couzin",
+            "Daniel Cremers",
+            "Francesco Croce",
+            "Andrew Cropper",
+            "Florence d'Alché",
+            "Angela Dai",
+            "Dima Damen",
+            "Maximilian Dax",
+            "Joachim Denzler",
+            "Audrey Durand",
+            "Marcus Ebeling",
+            "Samira Ebrahimi Kahou",
+            "Alexander Ecker",
+            "Mennatallah El-Assady",
+            "Christoph Engel",
+            "Veronika Eyring",
+            "Azade Farshad",
+            "Tommaso Fellin",
+            "Michael Felsberg",
+            "Stefan Feuerriegel",
+            "Nicolas Flammarion",
+            "Vincent Fortuin",
+            "Gianni Franchi",
+            "Clyde Francks",
+            "Mario Fritz",
+            "Pascal Frossard",
+            "Johannes Fürnkranz",
+            "Juergen Gall",
+            "Ana J. Garcia Saez",
+            "NICOLA GATTI",
+            "Bernhard Geiger",
+            "Mario Giulianelli",
+            "Manuel Gomez Rodriguez",
+            "Henry Gouk",
+            "Arthur Gretton",
+            "Jinjin Gu",
+            "Iryna Gurevych",
+            "Moritz Hardt",
+            "Dietmar Harhoff",
+            "Heather Harrington",
+            "Jason Hartford",
+            "Søren Hauberg",
+            "Fengxiang He",
+            "Nidhi Hegde",
+            "Matthias Hein",
+            "Moritz Helmstaedter",
+            "Philipp Hennig",
+            "Ralf Herbrich",
+            "Jose Miguel Hernandez Lobato",
+            "Daniel Hernández-Lobato",
+            "Sepp Hochreiter",
+            "Christian Holz",
+            "Thorsten Holz",
+            "Antti Honkela",
+            "Wolfgang Huber",
+            "Eyke Hüllermeier",
+            "Madelon Hulsebos",
+            "Frank Hutter",
+            "Eddy Ilg",
+            "Leonardo Impett",
+            "Dimo Ivanov",
+            "Martin Jaggi",
+            "Nils Jansen",
+            "Stefanie Jegelka",
+            "Shaoxiong Ji",
+            "Shijie Jiang",
+            "Zhijing Jin",
+            "Dagmar Kainmueller",
+            "Vicky Kalogeiton",
+            "Maryam Kamgarpour",
+            "Dimosthenis Karatzas",
+            "Kimmo Kartasalo",
+            "Mikko Karttunen",
+            "Samuel Kaski",
+            "Frank Keller",
+            "Niki Kilbertus",
+            "Günter Klambauer",
+            "Arto Klami",
+            "Almut-Sophia Koepke",
+            "Heinz Koeppl",
+            "Alexander Koller",
+            "Nikola Konstantinov",
+            "Anna Korhonen",
+            "Hilde Kuehne",
+            "Zuzana Kukelova",
+            "Matt Kusner",
+            "Gitta Kutyniok",
+            "Christoph Lampert",
+            "Robert Legenstein",
+            "Jan Eric Lenssen",
+            "Bruno Lepri",
+            "Changjian Li",
+            "Renjie Liao",
+            "Or Litany",
+            "Shiwei Liu",
+            "Francesco Locatello",
+            "Po-Ling Loh",
+            "Manuel Lopes",
+            "ulrike luxburg",
+            "Oisin Mac Aodha",
+            "Jakob Macke",
+            "Enrico Magli",
+            "Rupam Mahmood",
+            "Lena Maier-Hein",
+            "Klaus Maier-Hein",
+            "Rupak Majumdar",
+            "Alberto Marchesi",
+            "Florian Marquardt",
+            "David Martinez-Rubio",
+            "Georg Martius",
+            "Jiri Matas",
+            "Celestine Mendler-Dünner",
+            "Alberto Maria Metelli",
+            "Mira Mezini",
+            "Marie-Francine Moens",
+            "Peyman Mohajerin Esfahani",
+            "Paul Mollière",
+            "Marco Mondelli",
+            "Krikamol Muandet",
+            "Vittorio Murino",
+            "Siddharth Narayanaswamy",
+            "Lorenzo Natale",
+            "Nassir Navab",
+            "Gergely Neu",
+            "Joerg Neugebauer",
+            "Mathias Niepert",
+            "Matthias Niessner",
+            "Feliks Nüske",
+            "Arlindo Oliveira",
+            "Nuria Oliver",
+            "Simon Olsson",
+            "Björn Ommer",
+            "Antti Oulasvirta",
+            "Edouard Oyallon",
+            "Asli Ozyurek",
+            "Wei Pan",
+            "M. Alessandra Papa",
+            "Simone Parisi",
+            "Stuart Parkin",
+            "ioannis patras",
+            "Danda Pani Paudel",
+            "Robert Peharz",
+            "Francisco Pereira",
+            "Jonas Peters",
+            "Thierry Poibeau",
+            "Marc Pollefeys",
+            "Edoardo Ponti",
+            "Massimiliano Pontil",
+            "Viola Priesemann",
+            "Natasa Przulj",
+            "Kai Puolamäki",
+            "Dierk Raabe",
+            "Rosanne Rademaker",
+            "Iyad Rahwan",
+            "Gunnar Rätsch",
+            "Markus Reichstein",
+            "Elisa Ricci",
+            "Harald Ringbauer",
+            "Hans-Walter Rix",
+            "Matthew Robinson",
+            "Marcus Rohrbach",
+            "Anna Rohrbach",
+            "Lorenzo Rosasco",
+            "Mariana Rossi",
+            "Paolo Rota",
+            "Stefan Roth",
+            "Constantin Rothkopf",
+            "Angel Rubio",
+            "Laura Ruotsalainen",
+            "T. Konstantin Rusch",
+            "Reza Sabzevari",
+            "Mrinmaya Sachan",
+            "Julio Saez-Rodriguez",
+            "Wojciech Samek",
+            "Piotr Sankowski",
+            "Amartya Sanyal",
+            "Torsten Sattler",
+            "Matteo Saveriano",
+            "Simone Schaub-Meyer",
+            "Bernt Schiele",
+            "Cordelia Schmid",
+            "Julia Schnabel",
+            "Bernhard Schölkopf",
+            "Martin Schrimpf",
+            "Nicu Sebe",
+            "Lorenzo Seidenari",
+            "Laura Sevilla",
+            "Freda Shi",
+            "Ricardo Silva",
+            "Josef Sivic",
+            "Johannes Soeding",
+            "Manuel Spitschan",
+            "Suvrit Sra",
+            "Oliver Stegle",
+            "Sebastian Stich",
+            "Birgit Stiller",
+            "Amos Storkey",
+            "Alessandro Suglia",
+            "Mingfei Sun",
+            "Ewa Szczurek",
+            "Siyu Tang",
+            "Graham Taylor",
+            "Matthew Taylor",
+            "Dorina Thanou",
+            "Fabian Theis",
+            "Christian Theobalt",
+            "Justus Thies",
+            "Radu Timofte",
+            "Tatiana Tommasi",
+            "Mariya Toneva",
+            "Laura Toni",
+            "Carme Torras",
+            "Marc Toussaint",
+            "Tomasz Trzciński",
+            "Dimitris Tzionas",
+            "Abhinav Valada",
+            "Isabel Valera",
+            "Sofie Valk",
+            "Silvana Valtcheva",
+            "Tim van Erven",
+            "Tejs Vegge",
+            "Aki Vehtari",
+            "Britta Velten",
+            "Antonio Vergari",
+            "Arno Villringer",
+            "Jilles Vreeken",
+            "Melanie Wald-Fuhrmann",
+            "Yuxia Wang",
+            "Felix Warmer",
+            "Nikolaus Weiskopf",
+            "Robert West",
+            "Anna Wienhard",
+            "Martin Wikelski",
+            "Guy Wolf",
+            "Elliott (Shangzhe) Wu",
+            "fanny Yang",
+            "Jiancheng Yang",
+            "Emine Yilmaz",
+            "Angela Yu",
+            "Jan Zahalka",
+            "Amir Zamir",
+            "Chrysoula Zerva",
+            "Guoying Zhao",
+            "Xiaoxiang Zhu",
+            "Xiaojue Zhu",
+            "Indrė Žliobaitė"
+        ];
+
+        // Nationality detection based on names
+        function guessNationality(name) {
+            const nameLower = name.toLowerCase();
+            const firstName = nameLower.split(' ')[0];
+            const lastName = nameLower.split(' ').pop();
+            
+            // Define patterns for different nationalities
+            const patterns = {
+                // German
+                'German': {
+                    flag: '🇩🇪',
+                    patterns: [
+                        /\b(wolfgang|frank|bernd|philipp|matthias|sebastian|christian|georg|juergen|joachim|klaus|stefan|thorsten|andreas|florian|jan eric|bernhard|günter|felix|nikolaus|martin|guy)\b/,
+                        /\b(monika|rebekka|britta|julia|birgit|anna|lena|mira|melanie)\b/,
+                        /(mueller|müller|schmidt|weber|wagner|becker|schulz|hoffmann|koch|bauer|richter|klein|wolf|schröder|neumann|schwarz|zimmermann|braun|krüger|hartmann|lange|schmitt|werner|schmitz|krause|meier|lehmann|fuchs|albrecht|sommer|möller|hahn|graf|keller|mayer|huber)$/,
+                        /(sch|tz|dt|ff|mann|berg|burg|feld|stein|bach|dorf|hoff|holz|kopf|reich|wald)$/,
+                        /\b(christian|matthias|philipp|sebastian|wolfgang|thorsten|stefan|joachim|bernhard|günter|klaus|andreas|florian|martin|felix|nikolaus)\b/
+                    ]
+                },
+                // Italian  
+                'Italian': {
+                    flag: '🇮🇹',
+                    patterns: [
+                        /\b(giuseppe|francesco|lorenzo|paolo|marcella|simone|alberto|enrico|carlo|michele|alessandro|marco|antonio|massimiliano)\b/,
+                        /\b(marcella|giulia|elisa|tatiana|laura)\b/,
+                        /(rossi|russo|ferrari|esposito|bianchi|romano|colombo|ricci|marino|greco|bruno|gallo|conti|de luca|costa|giordano|mancini|rizzo|lombardi|moretti|barbieri|fontana|santoro|mariani|rinaldi|caruso|ferrari|giuliani|benedetti|villa|pellegrini|serra|palumbo|leone|rosso|martino|marchetti|silvestri|monti|guerra|ferri|costa)$/,
+                        /(ini|etti|elli|acci|ucci|otti|asso|illo|ello|ato|ese|esi|ano|ino|olo|oli|ori|eri|eri)$/
+                    ]
+                },
+                // French
+                'French': {
+                    flag: '🇫🇷',
+                    patterns: [
+                        /\b(florence|thierry|edouard|pascal|angel|marc|carme)\b/,
+                        /\b(florence|audrey|marie|cordelia)\b/,
+                        /(martin|bernard|thomas|robert|petit|dubois|moreau|laurent|simon|michel|lefebvre|leroy|roux|david|bertrand|morel|fournier|girard|bonnet|dupont|lambert|fontaine|rousseau|vincent|muller|lefevre|faure|andre|mercier|blanc|guerin|boyer|garnier|chevalier|francois|legrand|gauthier|garcia|perrin|robin|clement|morin|nicolas|henry|roussel|mathieu|gautier|masson|marchand|duval|denis|dumont|marie|lemaire|noel|meyer|dufour|meunier|brun|blanchard|giraud|joly|riviere|lucas|brunet|gaillard|barbier|arnaud|martinez|gerard|remy|pierre|colin|vidal|caron|picard|roger|fabre|aubert|lemoine|renaud|dumas|lacroix|olivier|philippe|bourgeois|pierre|renard|michaud|richard|payet|lebon|king|jean|hubert|rey|leclercq|mace|roy|durand|louis|vincent|adam|philippe|marie|julien|david|stephane|nicolas|christophe|jerome|olivier|sebastien|frederic|cyril|benjamin|alexandre|antoine|pierre|michel|bruno|daniel|christian|didier|francis|sylvain|herve|pascal|franck|henri|jean|bernard|robert|maurice|andre|louis|marcel|roger|gerard|jacques|yves|fernand|rene|claude|lucien|paul|albert|joseph|francis|georges|emile|arthur|etienne|raymond|leon|eugene|pierre|denis|vincent|raphael|julien|xavier|emmanuel|maxime|fabien|valentin|jeremy|romain|thomas|guillaume|alexis|florian|lucas|adrien|kevin|loic|yann|vincent|simon|aurelien|mickael|jeremy|gaetan)$/,
+                        /(eau|eux|oux|ais|ois|ier|eau|aux|ue)$/
+                    ]
+                },
+                // Arabic/Middle Eastern
+                'Arabic/Middle Eastern': {
+                    flag: '🇸🇦',
+                    patterns: [
+                        /\b(sahar|amir|omar|ahmed|hassan|ali|mohammed|abdul|saeed|khalid|nasser|farid|tariq|karim|yasmin|fatima|zahra|aisha|khadija)\b/,
+                        /\b(sahar|zahra|fatima|yasmin|aisha|khadija)\b/,
+                        /(al|el|ibn|bin|abd|abu|hassan|hussein|rahman|mohammed|ahmad|ali|omar|khalil|mansour|said|salim|nasser|farid|tariq|karim|yazid|zakariya|ibrahim|ismail|yusuf|noah|adam|idris|sulaiman|dawud|hakim|rashid|bashir|nasir|shakir|tahir|zahir|malik|salah|sabir|walid|khalid|majid|jamil|jalal|jamal|kamal|nabil|nadir|qasim|rahim|rami|saad|salam|salman|sameer|sami|talib|wael|waleed|yasser|zain|ziad|ziyad)$/,
+                        /(abi|ani|awi|ini|oub|ouk|our|ous)$/
+                    ]
+                },
+                // Chinese
+                'Chinese': {
+                    flag: '🇨🇳',
+                    patterns: [
+                        /\b(wei|qi|yuki|mingfei|siyu|yuxia|jiancheng|guoying|xiaoxiang|xiaojue|shangzhe|fanny yang|angel chang)\b/,
+                        /\b(wei|qi|yuki|mingfei|siyu|yuxia|jiancheng|fanny|angel)\b/,
+                        /(wang|li|zhang|liu|chen|yang|zhao|huang|zhou|wu|xu|sun|ma|zhu|hu|guo|lin|he|gao|luo|zheng|liang|xie|tang|song|xu|deng|han|feng|cao|peng|zeng|xiao|tian|dong|pan|yuan|cai|jiang|yu|du|ye|cheng|su|wei|lu|ding|ren|shen|yao|lu|jiang|cui|qian|tan|lu|zou|shi|meng|xue|duan|lei|long|shi|tao|he|gu|hou|shao|mao|wan|qiu|qin|jiang|yin|bo|kong|bai|cui|kang|mao)$/,
+                        /(ang|ing|ong|eng|ian|uan|uang|iang)$/
+                    ]
+                },
+                // Scandinavian (Norwegian, Swedish, Danish)
+                'Scandinavian': {
+                    flag: '🇸🇪',
+                    patterns: [
+                        /\b(søren|aki|antti|simon|martin|anna|britta|laura)\b/,
+                        /\b(aki|antti|arto|kai|søren|anna|britta)\b/,
+                        /(sson|sen|berg|ström|holm|lund|berg|dahl|lund|strand|nord|sund|kvist|gren|blom|ek|as|åström|lindgren|engström|hedberg|sjöberg|lindberg|linder|lindström|sandström|blomqvist|hedström|wikström|holmberg|dahlberg|sundberg|rydberg|bergström|lindqvist|martinsson|gustafsson|carlsson|johansson|andersson|karlsson|nilsson|eriksson|larsson|olsson|persson|svensson|gustafsson|pettersson|jonsson|jansson|hansson|bengtsson|jönsson|lindberg|berg|holm|strand|kvist|gren|lund|dahl|qvist)$/,
+                        /(ssen|berg|ström|holm|lund|dahl|strand|nord|sund|kvist|gren|blom)$/
+                    ]
+                },
+                // Dutch/Flemish
+                'Dutch': {
+                    flag: '🇳🇱',
+                    patterns: [
+                        /\b(tim van|madelon|jilles)\b/,
+                        /\b(madelon)\b/,
+                        /(van|de|der|den|ten|ter|op|aan|bij|in|onder|over|uit|voor|na|tegen|tot|vanaf|volgens|tijdens|binnen|buiten|zonder|met|door|naar|voor|achter|boven|onder|tussen|rond|om)(\s)/,
+                        /(berg|burg|hof|hoef|dijk|donk|horst|huizen|kamp|meer|wijk|zaal|beek|broek|daal|gaard|haven|heide|kerk|plaats|stad|water|weg|woud)$/
+                    ]
+                },
+                // Polish
+                'Polish': {
+                    flag: '🇵🇱',
+                    patterns: [
+                        /\b(tomasz|piotr|ewa)\b/,
+                        /\b(ewa)\b/,
+                        /(ski|ska|cki|cka|dzki|dzka|owski|owska|ewski|ewska|iński|ińska|yński|yńska)$/,
+                        /(kowski|kowska|ewski|ewska|owski|owska|inski|inska|ynski|ynska|cinski|cinska|dzinski|dzinska)$/
+                    ]
+                },
+                // Greek
+                'Greek': {
+                    flag: '🇬🇷',
+                    patterns: [
+                        /\b(georgia|dimosthenis|dimitris|chrysoula)\b/,
+                        /\b(georgia|chrysoula)\b/,
+                        /(poulos|akis|opoulos|atos|ides|akos|ellis|antos|oglou|escu)$/,
+                        /(dis|tos|kis|los|nos|ros|sis|lis|mis|nis|pis|ris|tis|vis|xis|zis)$/
+                    ]
+                },
+                // Turkish
+                'Turkish': {
+                    flag: '🇹🇷',
+                    patterns: [
+                        /\b(emine|asli)\b/,
+                        /\b(emine|asli)\b/,
+                        /(oğlu|özkan|özdemir|öztürk|özen|özer|çelik|çetin|şahin|şen|yılmaz|yıldız|yıldırım|kara|kaya|koç|kurt|arslan|aydın|bayrak|demir|doğan|erdoğan|güneş|tekin|polat|şimşek|turan|uysal|yavuz|akın|acar|akman|ateş|aktaş|altın|aslan|ataş|ayan|baş|can|duman|erdem|esen|genç|gül|işık|kılıç|oral|özkan|sahin|taş|uçar|ünlü|uyar|vardar|yaşar)$/,
+                        /(oğlu|özkan|çelik|şahin|yılmaz|yıldız)$/
+                    ]
+                },
+                // Indian/South Asian
+                'Indian': {
+                    flag: '🇮🇳',
+                    patterns: [
+                        /\b(abhinav|mrinmaya|suvrit)\b/,
+                        /\b(sarath|priya|anita|kavya|meera|sita|uma|devi)\b/,
+                        /(sharma|patel|singh|kumar|gupta|agarwal|verma|khan|jain|bansal|mehta|shah|joshi|malhotra|arora|chopra|sinha|saxena|aggarwal|mittal|kapoor|rao|reddy|nair|iyer|menon|pillai|krishnan|raman|swamy|bhat|hegde|kulkarni|desai|gandhi|thakur|pandey|mishra|tiwari|singh|yadav|das|roy|sen|ghosh|mukherjee|chatterjee|bhattacharya|banerjee|dutta|chakraborty|paul|jana|mitra|kar|saha|bose|chandra|dey|lahiri|das|ray|bag|pal|mondal|halder|sarkar|khan|ahmed|ali|hassan|hussain|qureshi|ansari|siddiqui|rizvi|malik|iqbal|shah|shaikh|pathan|syed|zaidi)$/,
+                        /(esh|ash|ish|osh|ush|ani|ini|oni|uni|ari|eri|ori|uri)$/
+                    ]
+                },
+                // British/English
+                'British': {
+                    flag: '🇬🇧',
+                    patterns: [
+                        /\b(andrew|matthew|graham|amos|elliott|henry|jason|robert|guy|angela|heather|alison|freda)\b/,
+                        /\b(andrew|matthew|heather|alison|freda|angela)\b/,
+                        /(smith|jones|taylor|brown|williams|wilson|johnson|davies|evans|thomas|roberts|walker|wright|robinson|thompson|white|hughes|edwards|green|hall|wood|harris|martin|jackson|clarke|clark|lewis|lee|allen|young|king|scott|baker|adams|campbell|anderson|turner|parker|cooper|morris|ward|moore|watson|morgan|bell|murphy|bailey|richardson|cox|howard|ward|torres|peterson|gray|ramirez|james|watson|brooks|kelly|sanders|price|bennett|wood|barnes|ross|henderson|coleman|jenkins|perry|powell|long|patterson|hughes|flores|washington|butler|simmons|foster|gonzales|bryant|alexander|russell|griffin|diaz|hayes)$/
+                    ]
+                },
+                // Finnish
+                'Finnish': {
+                    flag: '🇫🇮',
+                    patterns: [
+                        /\b(aki|antti|kai|arto|mikko|samuel)\b/,
+                        /\b(aki|antti|arto|mikko)\b/,
+                        /(nen|la|inen|mäki|koski|niemi|järvi|salo|laine|aho|vuori|harju|peltonen|lehtonen|heikkinen|virtanen|mäkelä|korhonen|kinnunen|hakkarainen|leppänen|turunen|rautiainen|pitkänen|mattila|räisänen|saarinen|jokinen|latvala|huhtala|kuusisto|paavola|koskinen)$/,
+                        /(nen|la|inen|mäki|koski|järvi)$/
+                    ]
+                },
+                // Romanian
+                'Romanian': {
+                    flag: '🇷🇴',
+                    patterns: [
+                        /\b(radu|silvana)\b/,
+                        /\b(silvana)\b/,
+                        /(escu|eanu|ă|ică|oiu|oaie)$/
+                    ]
+                },
+                // Portuguese/Brazilian
+                'Portuguese': {
+                    flag: '🇵🇹',
+                    patterns: [
+                        /\b(arlindo|ricardo)\b/,
+                        /(silva|santos|oliveira|souza|rodrigues|ferreira|alves|pereira|lima|gomes|ribeiro|carvalho|castro|costa|pinto|rocha|correia|martins|jesus|soares|fernandes|gonçalves|vieira|mendes|cardoso|reis|ramos|machado|freitas|araújo|lopes|silva|azevedo|monteiro|melo|barbosa|rezende|franco|antunes|fonseca|moura|xavier|miranda|andrade|teixeira|moreira|cunha|henriques|nunes|vasconcelos|faria|borges|sá|matos|magalhães|pacheco|coelho)$/
+                    ]
+                },
+                // Lithuanian
+                'Lithuanian': {
+                    flag: '🇱🇹',
+                    patterns: [
+                        /\b(indrė)\b/,
+                        /(ė|ienė|aitė|ytė|utė|kas|is|us|as)$/
+                    ]
+                },
+                // Spanish
+                'Spanish': {
+                    flag: '🇪🇸',
+                    patterns: [
+                        /\b(isabel|laura)\b/,
+                        /(garcia|rodriguez|martinez|lopez|gonzalez|hernandez|perez|sanchez|ramirez|cruz|flores|gomez|morales|vazquez|jimenez|ruiz|diaz|moreno|muñoz|alvarez|romero|gutierrez|navarro|torres|dominguez|ramos|serrano|blanco|suarez|molina|castro|ortega|delgado|ortiz|marin|vargas|rubio|iglesias|medina|garrido|santos|cortes|lozano|guerrero|cano|prieto|mendez|calvo|sanz)$/,
+                        /(ez|az|iz|oz|uz|ez|ón|án|én|ín|ún)$/
+                    ]
+                }
+            };
+
+            // Check each nationality pattern
+            for (const [nationality, data] of Object.entries(patterns)) {
+                for (const pattern of data.patterns) {
+                    if (pattern.test(nameLower)) {
+                        return { nationality, flag: data.flag };
+                    }
+                }
+            }
+
+            // Default fallback - try to guess based on common patterns
+            if (/[àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ]/.test(nameLower)) {
+                return { nationality: 'European', flag: '🇪🇺' };
+            }
+            
+            return { nationality: 'Unknown', flag: '🌍' };
+        }
+
+        // Copy name to clipboard function
+        async function copyNameToClipboard(name, element) {
+            try {
+                await navigator.clipboard.writeText(name);
+                
+                // Visual feedback
+                element.classList.add('copy-feedback');
+                const originalText = element.innerHTML;
+                element.innerHTML = `📋 Copied: ${name}`;
+                
+                setTimeout(() => {
+                    element.classList.remove('copy-feedback');
+                    element.innerHTML = originalText;
+                }, 1500);
+                
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = name;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                // Visual feedback for fallback
+                element.classList.add('copy-feedback');
+                const originalText = element.innerHTML;
+                element.innerHTML = `📋 Copied: ${name}`;
+                
+                setTimeout(() => {
+                    element.classList.remove('copy-feedback');
+                    element.innerHTML = originalText;
+                }, 1500);
+            }
+        }
+
+        // Auto-link conversion function
+        function convertLinksToClickable(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+        }
+
+        function autoLinkDetection(textarea) {
+            const text = textarea.value;
+            const cursorPos = textarea.selectionStart;
+            const textBeforeCursor = text.substring(0, cursorPos);
+            const lastWord = textBeforeCursor.split(/\s/).pop();
+            
+            // Check if the last word before cursor is a URL
+            const urlRegex = /^https?:\/\/[^\s]+$/;
+            if (urlRegex.test(lastWord)) {
+                // Add visual feedback that link was detected
+                textarea.style.backgroundColor = '#e8f5e8';
+                setTimeout(() => {
+                    textarea.style.backgroundColor = '';
+                }, 500);
+            }
+        }
+
+        // Memory system using localStorage
+        class NotesMemory {
+            constructor() {
+                this.storageKey = 'names-notes';
+                this.notes = this.loadNotes();
+            }
+
+            loadNotes() {
+                try {
+                    const stored = localStorage.getItem(this.storageKey);
+                    return stored ? JSON.parse(stored) : {};
+                } catch (error) {
+                    console.error('Error loading notes:', error);
+                    return {};
+                }
+            }
+
+            saveNotes() {
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(this.notes));
+                } catch (error) {
+                    console.error('Error saving notes:', error);
+                }
+            }
+
+            getNote(name) {
+                return this.notes[name] || '';
+            }
+
+            setNote(name, note) {
+                if (note.trim()) {
+                    this.notes[name] = note.trim();
+                } else {
+                    delete this.notes[name];
+                }
+                this.saveNotes();
+            }
+
+            hasNote(name) {
+                return this.notes.hasOwnProperty(name) && this.notes[name].trim() !== '';
+            }
+
+            getAllNotesCount() {
+                return Object.keys(this.notes).length;
+            }
+        }
+
+        // Initialize memory system
+        const notesMemory = new NotesMemory();
+        let filteredNames = [...names];
+        
+        // Recommended PhD supervisors (top 10 based on academic prominence)
+        const recommendedSupervisors = [
+            "Bernhard Schölkopf",
+            "Daniel Cremers", 
+            "Thomas Brox",
+            "Zeynep Akata",
+            "Frank Hutter",
+            "Matthias Niessner",
+            "Bernt Schiele",
+            "Stefan Roth",
+            "Andreas Bulling",
+            "Juergen Gall"
+        ];
+        
+        // PhD selection management
+        let selectedPhdCandidates = JSON.parse(localStorage.getItem('phd-selections') || '[]');
+        
+        function updatePhdCounter() {
+            document.getElementById('phdCounter').textContent = `${selectedPhdCandidates.length}/10 selected`;
+        }
+        
+        function togglePhdSelection(name) {
+            const index = selectedPhdCandidates.indexOf(name);
+            if (index > -1) {
+                selectedPhdCandidates.splice(index, 1);
+            } else if (selectedPhdCandidates.length < 10) {
+                selectedPhdCandidates.push(name);
+            } else {
+                alert('You can only select up to 10 PhD supervisors!');
+                // Uncheck the checkbox since we're not adding it
+                const checkbox = document.querySelector(`input[onchange="togglePhdSelection('${name}')"]`);
+                if (checkbox) checkbox.checked = false;
+                return;
+            }
+            
+            localStorage.setItem('phd-selections', JSON.stringify(selectedPhdCandidates));
+            updatePhdCounter();
+            
+            // Only update the visual state of this specific item, don't rebuild entire list
+            updateItemVisualState(name);
+        }
+        
+        function updateItemVisualState(name) {
+            const nameItem = document.querySelector(`div[data-name="${name}"]`);
+            if (nameItem) {
+                const isSelected = selectedPhdCandidates.includes(name);
+                if (isSelected) {
+                    nameItem.classList.add('phd-selected');
+                } else {
+                    nameItem.classList.remove('phd-selected');
+                }
+            }
+        }
+        
+        function showSelectedList() {
+            if (selectedPhdCandidates.length === 0) {
+                alert('No PhD supervisors selected yet!');
+                return;
+            }
+            
+            const list = selectedPhdCandidates.map((name, index) => `${index + 1}. ${name}`).join('\n');
+            alert(`Selected PhD Supervisors (${selectedPhdCandidates.length}/10):\n\n${list}`);
+        }
+        
+        function clearAllSelections() {
+            if (confirm('Are you sure you want to clear all PhD supervisor selections?')) {
+                selectedPhdCandidates = [];
+                localStorage.setItem('phd-selections', JSON.stringify(selectedPhdCandidates));
+                updatePhdCounter();
+                populateNamesList();
+            }
+        }
+
+        // Create name item HTML
+        function createNameItem(name, index) {
+            const hasNote = notesMemory.hasNote(name);
+            const note = notesMemory.getNote(name);
+            const nationality = guessNationality(name);
+            const isRecommended = recommendedSupervisors.includes(name);
+            const isSelected = selectedPhdCandidates.includes(name);
+            const nameId = `name-${index}`;
+            const noteWithLinks = convertLinksToClickable(note);
+            
+            return `
+                <div class="name-item ${isSelected ? 'phd-selected' : ''}" data-name="${name}" id="${nameId}">
+                    <div class="name-header">
+                        <span class="name-text">
+                            ${index + 1}. 
+                            <span class="nationality-flag">${nationality.flag}</span>
+                            <span class="clickable-name" onclick="copyNameToClipboard('${name}', this)" title="Click to copy name">${name}</span>
+                            <span class="nationality-text">${nationality.nationality}</span>
+                            ${isRecommended ? '<span class="recommended-badge">⭐ TOP</span>' : ''}
+                        </span>
+                        <div>
+                            <span class="phd-selector">
+                                <input type="checkbox" class="phd-checkbox" ${isSelected ? 'checked' : ''} 
+                                       data-name="${name}" />
+                                <label>PhD Candidate</label>
+                            </span>
+                            <button class="note-toggle ${hasNote ? 'has-note' : ''}" data-name="${name}">
+                                ${hasNote ? '📝 Edit Note' : '➕ Add Note'}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="note-section" data-name="${name}">
+                        <div class="note-display ${hasNote ? 'active' : ''}" data-name="${name}">${noteWithLinks}</div>
+                        <textarea class="note-textarea" placeholder="Add your notes about ${name}... (URLs will become clickable links)" data-name="${name}">${note}</textarea>
+                        <div class="note-actions">
+                            <button class="save-note" data-name="${name}">Save</button>
+                            <button class="clear-note" data-name="${name}">Clear</button>
+                            <button class="edit-toggle" data-name="${name}">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Search and filter functionality
+        function filterNames() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterType = document.getElementById('filterSelect').value;
+            const countryFilter = document.getElementById('countryFilter').value;
+            
+            filteredNames = names.filter(name => {
+                const matchesSearch = name.toLowerCase().includes(searchTerm);
+                const hasNote = notesMemory.hasNote(name);
+                const isSelected = selectedPhdCandidates.includes(name);
+                const nationality = guessNationality(name).nationality;
+                
+                let matchesFilter = true;
+                if (filterType === 'with-notes') {
+                    matchesFilter = hasNote;
+                } else if (filterType === 'without-notes') {
+                    matchesFilter = !hasNote;
+                } else if (filterType === 'selected-phd') {
+                    matchesFilter = isSelected;
+                }
+                
+                let matchesCountry = true;
+                if (countryFilter !== 'all') {
+                    matchesCountry = nationality === countryFilter;
+                }
+                
+                return matchesSearch && matchesFilter && matchesCountry;
+            });
+            
+            populateNamesList();
+        }
+
+        // Populate the names list
+        function populateNamesList() {
+            const namesList = document.getElementById('namesList');
+            const nameCount = document.getElementById('nameCount');
+            const notesCount = notesMemory.getAllNotesCount();
+            
+            // Calculate country statistics for filtered names
+            const countryStats = {};
+            filteredNames.forEach(name => {
+                const nationality = guessNationality(name).nationality;
+                countryStats[nationality] = (countryStats[nationality] || 0) + 1;
+            });
+            
+            // Create country breakdown text
+            const countryBreakdown = Object.entries(countryStats)
+                .sort((a, b) => b[1] - a[1]) // Sort by count descending
+                .slice(0, 5) // Show top 5 countries
+                .map(([country, count]) => `${country}: ${count}`)
+                .join(', ');
+            
+            // Update count
+            nameCount.innerHTML = `
+                Total Names: ${names.length} | 
+                Showing: ${filteredNames.length} | 
+                Notes: ${notesCount}
+                ${filteredNames.length < names.length ? `<br><small>Top countries: ${countryBreakdown}</small>` : ''}
+            `;
+            
+            // Clear existing content
+            namesList.innerHTML = '';
+            
+            // Add each name as an item
+            filteredNames.forEach((name, index) => {
+                namesList.innerHTML += createNameItem(name, index);
+            });
+            
+            // Add event listeners
+            addEventListeners();
+        }
+
+        // Add event listeners for note functionality
+        function addEventListeners() {
+            // Note toggle buttons
+            document.querySelectorAll('.note-toggle').forEach(button => {
+                button.addEventListener('click', function() {
+                    const name = this.dataset.name;
+                    const noteSection = document.querySelector(`.note-section[data-name="${name}"]`);
+                    const noteDisplay = noteSection.querySelector('.note-display');
+                    const noteTextarea = noteSection.querySelector('.note-textarea');
+                    
+                    noteSection.classList.toggle('active');
+                    
+                    // If opening and has note, show display mode first
+                    if (noteSection.classList.contains('active') && notesMemory.hasNote(name)) {
+                        noteDisplay.style.display = 'block';
+                        noteTextarea.style.display = 'none';
+                    } else if (noteSection.classList.contains('active')) {
+                        // If no note, go straight to edit mode
+                        noteDisplay.style.display = 'none';
+                        noteTextarea.style.display = 'block';
+                        noteTextarea.focus();
+                    }
+                });
+            });
+
+            // Edit toggle buttons
+            document.querySelectorAll('.edit-toggle').forEach(button => {
+                button.addEventListener('click', function() {
+                    const name = this.dataset.name;
+                    const noteSection = document.querySelector(`.note-section[data-name="${name}"]`);
+                    const noteDisplay = noteSection.querySelector('.note-display');
+                    const noteTextarea = noteSection.querySelector('.note-textarea');
+                    
+                    if (noteTextarea.style.display === 'none') {
+                        // Switch to edit mode
+                        noteDisplay.style.display = 'none';
+                        noteTextarea.style.display = 'block';
+                        noteTextarea.focus();
+                        this.textContent = 'View';
+                    } else {
+                        // Switch to view mode
+                        noteDisplay.innerHTML = convertLinksToClickable(noteTextarea.value);
+                        noteDisplay.style.display = 'block';
+                        noteTextarea.style.display = 'none';
+                        this.textContent = 'Edit';
+                    }
+                });
+            });
+
+            // Auto-link detection on space key
+            document.querySelectorAll('.note-textarea').forEach(textarea => {
+                textarea.addEventListener('keyup', function(e) {
+                    if (e.key === ' ') {
+                        autoLinkDetection(this);
+                    }
+                });
+                
+                textarea.addEventListener('input', function() {
+                    // Real-time update of display mode
+                    const name = this.dataset.name;
+                    const noteDisplay = document.querySelector(`.note-display[data-name="${name}"]`);
+                    if (noteDisplay) {
+                        noteDisplay.innerHTML = convertLinksToClickable(this.value);
+                    }
+                });
+            });
+
+            // Save note buttons
+            document.querySelectorAll('.save-note').forEach(button => {
+                button.addEventListener('click', function() {
+                    const name = this.dataset.name;
+                    const textarea = document.querySelector(`.note-section[data-name="${name}"] .note-textarea`);
+                    const noteDisplay = document.querySelector(`.note-section[data-name="${name}"] .note-display`);
+                    const note = textarea.value;
+                    
+                    notesMemory.setNote(name, note);
+                    
+                    // Update display with clickable links
+                    noteDisplay.innerHTML = convertLinksToClickable(note);
+                    
+                    // Switch to display mode after saving
+                    if (note.trim()) {
+                        noteDisplay.style.display = 'block';
+                        textarea.style.display = 'none';
+                        noteDisplay.classList.add('active');
+                    }
+                    
+                    // Update the toggle button
+                    const toggleButton = document.querySelector(`.note-toggle[data-name="${name}"]`);
+                    const hasNote = notesMemory.hasNote(name);
+                    toggleButton.textContent = hasNote ? '📝 Edit Note' : '➕ Add Note';
+                    toggleButton.className = `note-toggle ${hasNote ? 'has-note' : ''}`;
+                    
+                    // Update counts
+                    populateNamesList();
+                    
+                    // Show success feedback
+                    const originalText = this.textContent;
+                    this.textContent = 'Saved!';
+                    this.style.backgroundColor = '#4CAF50';
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.style.backgroundColor = '';
+                    }, 1000);
+                });
+            });
+
+            // Clear note buttons
+            document.querySelectorAll('.clear-note').forEach(button => {
+                button.addEventListener('click', function() {
+                    const name = this.dataset.name;
+                    const textarea = document.querySelector(`.note-section[data-name="${name}"] .note-textarea`);
+                    
+                    if (confirm(`Are you sure you want to clear the note for ${name}?`)) {
+                        textarea.value = '';
+                        notesMemory.setNote(name, '');
+                        
+                        // Update the toggle button
+                        const toggleButton = document.querySelector(`.note-toggle[data-name="${name}"]`);
+                        toggleButton.textContent = '➕ Add Note';
+                        toggleButton.className = 'note-toggle';
+                        
+                        // Hide note section
+                        const noteSection = document.querySelector(`.note-section[data-name="${name}"]`);
+                        noteSection.classList.remove('active');
+                        
+                        // Update counts
+                        populateNamesList();
+                    }
+                });
+            });
+            
+            // PhD checkbox event delegation - much faster!
+            document.querySelectorAll('.phd-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const name = this.dataset.name;
+                    togglePhdSelection(name);
+                });
+            });
+        }
+
+        // Search and filter event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            populateNamesList();
+            updatePhdCounter();
+            
+            document.getElementById('searchInput').addEventListener('input', filterNames);
+            document.getElementById('filterSelect').addEventListener('change', filterNames);
+            document.getElementById('countryFilter').addEventListener('change', filterNames);
+        });
+    </script>
+    </script>
+</body>
+</html>
