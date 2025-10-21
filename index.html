@@ -2009,7 +2009,7 @@
             }
             
             // Replace {name} placeholder with actual professor name
-            const fullPrompt = prompt.replace(/\{name\}/g, professorName).replace(/Research \(name\)/g, `Research ${professorName}`);
+            const fullPrompt = prompt.replace(/\{name\}/g, professorName);
             
             try {
                 showStatus(`🔍 Researching ${professorName}...`, 'info');
@@ -2153,7 +2153,10 @@
                 
                 if (isCorsError) {
                     // Return a demo response for CORS issues
-                    const professorName = prompt.match(/Research (\w+(?:\s+\w+)*)/)?.[1] || 'Professor';
+                    const professorName = prompt.match(/(?:Research.*?)([A-Z][a-z]+(?: [A-Z][a-z]+)*)/)?.[1] || 
+                                        prompt.match(/([A-Z][a-z]+(?: [A-Z][a-z]+)+)/)?.[1] || 
+                                        'Professor';
+                    
                     return `🔬 **${professorName} - Research Demo**
 
 **Research Areas:** Machine Learning, Computer Vision, Natural Language Processing
