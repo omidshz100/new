@@ -2029,20 +2029,32 @@
                 notesMemory.setNote(professorName, newNote);
                 console.log('Note saved. Checking if saved correctly:', notesMemory.getNote(professorName));
                 
+                // Store which note section was open before refreshing
+                const wasNoteOpen = document.querySelector(`.note-section[data-name="${professorName}"]`)?.classList.contains('active');
+                
                 // Update the display
                 populateNamesList();
                 
-                // Auto-open the note section to show the result
+                // Auto-open the note section to show the result and keep it open
                 setTimeout(() => {
                     const noteSection = document.querySelector(`.note-section[data-name="${professorName}"]`);
                     const noteDisplay = noteSection?.querySelector('.note-display');
+                    const noteTextarea = noteSection?.querySelector('.note-textarea');
                     const noteToggleButton = document.querySelector(`.note-toggle[data-name="${professorName}"]`);
                     
                     if (noteSection && noteDisplay && noteToggleButton) {
                         console.log('Opening note section for', professorName);
+                        
+                        // Activate the note section
                         noteSection.classList.add('active');
+                        
+                        // Show in display mode (not edit mode)
                         noteDisplay.style.display = 'block';
-                        noteDisplay.classList.add('active');
+                        noteTextarea.style.display = 'none';
+                        
+                        // Update the button text to reflect the note exists
+                        noteToggleButton.textContent = '📝 Edit Note';
+                        noteToggleButton.classList.add('has-note');
                         
                         // Scroll to the note section
                         noteSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
