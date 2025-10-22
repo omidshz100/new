@@ -1981,6 +1981,9 @@
 
         // Search and filter event listeners
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize visitor counter first
+            visitorCounter = new VisitorCounter();
+            
             populateNamesList();
             updatePhdCounter();
             
@@ -2434,70 +2437,8 @@
         }
         
         // Initialize visitor counter when page loads
+        // Initialize visitor counter when page loads
         let visitorCounter;
-        
-        // Update the existing DOMContentLoaded event listener
-        const existingDOMContentLoaded = document.addEventListener;
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize visitor counter first
-            visitorCounter = new VisitorCounter();
-            
-            // Then run the existing initialization code
-            populateNamesList();
-            updatePhdCounter();
-            
-            document.getElementById('searchInput').addEventListener('input', filterNames);
-            document.getElementById('filterSelect').addEventListener('change', filterNames);
-            document.getElementById('countryFilter').addEventListener('change', filterNames);
-
-            // AI Research Prompt save
-            document.getElementById('savePrompt').addEventListener('click', function() {
-                const prompt = document.getElementById('aiPrompt').value;
-                localStorage.setItem('aiResearchPrompt', prompt);
-                showStatus('✅ Prompt saved successfully!', 'success');
-            });
-
-            // API Key save
-            document.getElementById('saveApiKey').addEventListener('click', function() {
-                const apiKey = document.getElementById('apiKey').value.trim();
-                if (apiKey) {
-                    localStorage.setItem('claudeApiKey', apiKey);
-                    showStatus('✅ API Key saved successfully!', 'success');
-                } else {
-                    showStatus('❌ Please enter a valid API key!', 'error');
-                }
-            });
-
-            // Load saved API key
-            const savedApiKey = localStorage.getItem('claudeApiKey');
-            if (savedApiKey) {
-                document.getElementById('apiKey').value = savedApiKey;
-            }
-
-            // Load saved prompt
-            const savedPrompt = localStorage.getItem('aiResearchPrompt');
-            if (savedPrompt) {
-                document.getElementById('aiPrompt').value = savedPrompt;
-            } else {
-                document.getElementById('aiPrompt').value = "Research {name} - provide a comprehensive summary including: research areas, notable publications, current affiliation, key achievements, and potential PhD supervision opportunities. Include recent work and collaboration potential.";
-            }
-
-            // Clear all notes
-            document.getElementById('clearAllNotes').addEventListener('click', function() {
-                if (confirm('Are you sure you want to clear all notes? This action cannot be undone.')) {
-                    // Clear using the existing notes system
-                    localStorage.removeItem('names-notes'); // Clear the notes storage
-                    notesMemory.notes = {}; // Clear the memory object
-                    populateNamesList(); // Refresh the display
-                    showStatus('✅ All notes cleared!', 'success');
-                }
-            });
-
-            // Research all professors
-            document.getElementById('researchAll').addEventListener('click', function() {
-                researchAllProfessors();
-            });
-        });
         
         // Add visitor counter to window for debugging/admin
         window.getVisitorStats = function() {
