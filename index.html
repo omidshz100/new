@@ -362,11 +362,66 @@
             margin-bottom: 20px;
             font-style: italic;
         }
+        .visitor-counter {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .visitor-counter h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        .visitor-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 120px;
+        }
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Names List with Notes</h1>
+        
+        <!-- Visitor Counter Section -->
+        <div class="visitor-counter">
+            <h3>📊 Website Statistics</h3>
+            <div class="visitor-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalVisitors">0</span>
+                    Total Visitors
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="todayVisitors">0</span>
+                    Today's Visitors
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="uniqueVisitors">0</span>
+                    Unique Visitors
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="lastVisit">Never</span>
+                    Last Visit
+                </div>
+            </div>
+        </div>
+
         <div class="count" id="nameCount"></div>
         <p> <a href="https://apply.ellis.eu/applicants/5716/edit" > The resistration Link  </a> </p>
         
@@ -2220,6 +2275,243 @@
         window.testNoteSaving = testNoteSaving;
         window.clearOldResearch = clearOldResearch;
         window.notesMemory = notesMemory;
+
+        // ========================
+        // VISITOR COUNTER SYSTEM
+        // ========================
+        
+        class VisitorCounter {
+            constructor() {
+                this.storageKeys = {
+                    totalVisitors: 'site-total-visitors',
+                    uniqueVisitors: 'site-unique-visitors',
+                    todayVisitors: 'site-today-visitors',
+                    lastVisitDate: 'site-last-visit-date',
+                    visitorId: 'site-visitor-id',
+                    dailyDate: 'site-daily-date'
+                };
+                
+                this.initializeVisitorTracking();
+                this.updateVisitorStats();
+            }
+            
+            initializeVisitorTracking() {
+                const now = new Date();
+                const today = now.toDateString();
+                const currentTime = now.toLocaleString();
+                
+                // Get or create unique visitor ID
+                let visitorId = localStorage.getItem(this.storageKeys.visitorId);
+                if (!visitorId) {
+                    visitorId = this.generateVisitorId();
+                    localStorage.setItem(this.storageKeys.visitorId, visitorId);
+                    
+                    // New unique visitor
+                    this.incrementUniqueVisitors();
+                }
+                
+                // Handle daily visitor count
+                const lastDailyDate = localStorage.getItem(this.storageKeys.dailyDate);
+                if (lastDailyDate !== today) {
+                    // New day, reset today's count
+                    localStorage.setItem(this.storageKeys.todayVisitors, '1');
+                    localStorage.setItem(this.storageKeys.dailyDate, today);
+                } else {
+                    // Same day, increment today's count
+                    this.incrementTodayVisitors();
+                }
+                
+                // Always increment total visitors (every page load)
+                this.incrementTotalVisitors();
+                
+                // Update last visit time
+                localStorage.setItem(this.storageKeys.lastVisitDate, currentTime);
+            }
+            
+            generateVisitorId() {
+                return 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            incrementTotalVisitors() {
+                const current = parseInt(localStorage.getItem(this.storageKeys.totalVisitors) || '0');
+                localStorage.setItem(this.storageKeys.totalVisitors, (current + 1).toString());
+            }
+            
+            incrementUniqueVisitors() {
+                const current = parseInt(localStorage.getItem(this.storageKeys.uniqueVisitors) || '0');
+                localStorage.setItem(this.storageKeys.uniqueVisitors, (current + 1).toString());
+            }
+            
+            incrementTodayVisitors() {
+                const current = parseInt(localStorage.getItem(this.storageKeys.todayVisitors) || '0');
+                localStorage.setItem(this.storageKeys.todayVisitors, (current + 1).toString());
+            }
+            
+            getTotalVisitors() {
+                return parseInt(localStorage.getItem(this.storageKeys.totalVisitors) || '0');
+            }
+            
+            getUniqueVisitors() {
+                return parseInt(localStorage.getItem(this.storageKeys.uniqueVisitors) || '0');
+            }
+            
+            getTodayVisitors() {
+                return parseInt(localStorage.getItem(this.storageKeys.todayVisitors) || '0');
+            }
+            
+            getLastVisitDate() {
+                return localStorage.getItem(this.storageKeys.lastVisitDate) || 'Never';
+            }
+            
+            updateVisitorStats() {
+                // Update the display elements
+                const totalElement = document.getElementById('totalVisitors');
+                const uniqueElement = document.getElementById('uniqueVisitors');
+                const todayElement = document.getElementById('todayVisitors');
+                const lastVisitElement = document.getElementById('lastVisit');
+                
+                if (totalElement) totalElement.textContent = this.getTotalVisitors().toLocaleString();
+                if (uniqueElement) uniqueElement.textContent = this.getUniqueVisitors().toLocaleString();
+                if (todayElement) todayElement.textContent = this.getTodayVisitors().toLocaleString();
+                if (lastVisitElement) {
+                    const lastVisit = this.getLastVisitDate();
+                    if (lastVisit !== 'Never') {
+                        const lastVisitDate = new Date(lastVisit);
+                        const now = new Date();
+                        const diffMs = now - lastVisitDate;
+                        const diffMins = Math.floor(diffMs / 60000);
+                        const diffHours = Math.floor(diffMs / 3600000);
+                        const diffDays = Math.floor(diffMs / 86400000);
+                        
+                        let timeAgo;
+                        if (diffMins < 1) {
+                            timeAgo = 'Just now';
+                        } else if (diffMins < 60) {
+                            timeAgo = `${diffMins} min ago`;
+                        } else if (diffHours < 24) {
+                            timeAgo = `${diffHours} hr ago`;
+                        } else if (diffDays < 7) {
+                            timeAgo = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+                        } else {
+                            timeAgo = lastVisitDate.toLocaleDateString();
+                        }
+                        
+                        lastVisitElement.textContent = timeAgo;
+                    } else {
+                        lastVisitElement.textContent = 'First visit!';
+                    }
+                }
+                
+                console.log('📊 Visitor Stats Updated:', {
+                    total: this.getTotalVisitors(),
+                    unique: this.getUniqueVisitors(),
+                    today: this.getTodayVisitors(),
+                    lastVisit: this.getLastVisitDate()
+                });
+            }
+            
+            // Admin function to reset all stats (for testing)
+            resetAllStats() {
+                Object.values(this.storageKeys).forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                this.initializeVisitorTracking();
+                this.updateVisitorStats();
+                console.log('🔄 All visitor stats have been reset');
+            }
+            
+            // Get detailed stats for admin
+            getDetailedStats() {
+                return {
+                    totalVisitors: this.getTotalVisitors(),
+                    uniqueVisitors: this.getUniqueVisitors(),
+                    todayVisitors: this.getTodayVisitors(),
+                    lastVisit: this.getLastVisitDate(),
+                    visitorId: localStorage.getItem(this.storageKeys.visitorId),
+                    dailyDate: localStorage.getItem(this.storageKeys.dailyDate)
+                };
+            }
+        }
+        
+        // Initialize visitor counter when page loads
+        let visitorCounter;
+        
+        // Update the existing DOMContentLoaded event listener
+        const existingDOMContentLoaded = document.addEventListener;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize visitor counter first
+            visitorCounter = new VisitorCounter();
+            
+            // Then run the existing initialization code
+            populateNamesList();
+            updatePhdCounter();
+            
+            document.getElementById('searchInput').addEventListener('input', filterNames);
+            document.getElementById('filterSelect').addEventListener('change', filterNames);
+            document.getElementById('countryFilter').addEventListener('change', filterNames);
+
+            // AI Research Prompt save
+            document.getElementById('savePrompt').addEventListener('click', function() {
+                const prompt = document.getElementById('aiPrompt').value;
+                localStorage.setItem('aiResearchPrompt', prompt);
+                showStatus('✅ Prompt saved successfully!', 'success');
+            });
+
+            // API Key save
+            document.getElementById('saveApiKey').addEventListener('click', function() {
+                const apiKey = document.getElementById('apiKey').value.trim();
+                if (apiKey) {
+                    localStorage.setItem('claudeApiKey', apiKey);
+                    showStatus('✅ API Key saved successfully!', 'success');
+                } else {
+                    showStatus('❌ Please enter a valid API key!', 'error');
+                }
+            });
+
+            // Load saved API key
+            const savedApiKey = localStorage.getItem('claudeApiKey');
+            if (savedApiKey) {
+                document.getElementById('apiKey').value = savedApiKey;
+            }
+
+            // Load saved prompt
+            const savedPrompt = localStorage.getItem('aiResearchPrompt');
+            if (savedPrompt) {
+                document.getElementById('aiPrompt').value = savedPrompt;
+            } else {
+                document.getElementById('aiPrompt').value = "Research {name} - provide a comprehensive summary including: research areas, notable publications, current affiliation, key achievements, and potential PhD supervision opportunities. Include recent work and collaboration potential.";
+            }
+
+            // Clear all notes
+            document.getElementById('clearAllNotes').addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear all notes? This action cannot be undone.')) {
+                    // Clear using the existing notes system
+                    localStorage.removeItem('names-notes'); // Clear the notes storage
+                    notesMemory.notes = {}; // Clear the memory object
+                    populateNamesList(); // Refresh the display
+                    showStatus('✅ All notes cleared!', 'success');
+                }
+            });
+
+            // Research all professors
+            document.getElementById('researchAll').addEventListener('click', function() {
+                researchAllProfessors();
+            });
+        });
+        
+        // Add visitor counter to window for debugging/admin
+        window.getVisitorStats = function() {
+            if (visitorCounter) {
+                return visitorCounter.getDetailedStats();
+            }
+            return null;
+        };
+        
+        window.resetVisitorStats = function() {
+            if (visitorCounter) {
+                visitorCounter.resetAllStats();
+            }
+        };
     </script>
     </script>
 </body>
